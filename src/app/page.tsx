@@ -1,23 +1,34 @@
 import Link from "next/link";
-import { Logo, Mark } from "@/components/Logo";
+import { Logo } from "@/components/Logo";
 import { Reveal } from "@/components/Reveal";
 
-const stats = [
-  { value: "1", label: "Profil pour tous tes documents" },
-  { value: "2", label: "Documents par offre : CV + lettre" },
-  { value: "5", label: "Étapes de suivi" },
-  { value: "0", label: "Expérience inventée" },
+const jobs = [
+  "Cheffe de projet",
+  "Développeur front-end",
+  "Chargée de communication",
+  "Comptable",
+  "Product owner",
+  "Infirmier coordinateur",
+  "Commercial B2B",
+  "Data analyst",
+  "Assistante RH",
+  "Responsable logistique",
 ];
 
-const marquee = ["CV sur mesure", "Lettre de motivation", "Suivi des candidatures", "Export PDF", "Mots-clés de l'offre"];
-
-const steps = [
-  { n: "01", title: "Décris ton parcours", text: "Une seule fois : expériences, formation, compétences. Tu peux simplement coller ton CV actuel." },
-  { n: "02", title: "Colle une offre", text: "Le poste, l'entreprise et le texte de l'annonce suffisent à Postulia pour cibler ta candidature." },
-  { n: "03", title: "Relis et envoie", text: "Ton CV et ta lettre s'écrivent sous tes yeux. Tu ajustes, tu exportes en PDF, tu postules." },
+const examples = [
+  { job: "Développeuse web", text: "Projets, technos et résultats mis en avant.", tint: "from-[#e9e6ff] to-[#f6f4ff]", chip: "bg-brand-soft text-brand-dark" },
+  { job: "Responsable marketing", text: "Campagnes, budgets et chiffres clés en tête.", tint: "from-[#ffe4ee] to-[#fff4f8]", chip: "bg-[#ffe1ea] text-[#c2185b]" },
+  { job: "Analyste financier", text: "Rigueur, outils et périmètres bien lisibles.", tint: "from-[#dff1ff] to-[#f3faff]", chip: "bg-[#dcefff] text-[#0b63b6]" },
+  { job: "Chargé des ressources humaines", text: "Recrutement, paie et dialogue social.", tint: "from-[#ffeeda] to-[#fff8ef]", chip: "bg-[#ffe9cc] text-[#a85b00]" },
+  { job: "Cadre commercial", text: "Portefeuille, objectifs et taux d'atteinte.", tint: "from-[#e3f7ea] to-[#f4fcf7]", chip: "bg-[#d9f3e2] text-[#157a43]" },
+  { job: "Cheffe de produit", text: "Vision, priorisation et impact mesuré.", tint: "from-[#f1e3ff] to-[#faf4ff]", chip: "bg-[#eedcff] text-[#7a1fd1]" },
 ];
 
 const faq = [
+  {
+    q: "Qu'est-ce que Postulia et comment ça marche ?",
+    a: "Tu décris ton parcours une seule fois. Ensuite, pour chaque offre, tu colles l'annonce : Postulia rédige un CV et une lettre de motivation adaptés, que tu peux modifier, enregistrer et exporter en PDF.",
+  },
   {
     q: "Est-ce que l'IA invente des expériences ?",
     a: "Non. Postulia travaille uniquement à partir du parcours que tu fournis. S'il manque une information, il laisse un repère entre crochets pour que tu la complètes.",
@@ -36,21 +47,25 @@ const faq = [
   },
 ];
 
-function Diamond({ className = "" }: { className?: string }) {
-  return <span aria-hidden className={`inline-block rotate-45 rounded-[3px] ${className}`} />;
+function Arrow() {
+  return (
+    <svg viewBox="0 0 16 16" className="h-4 w-4" aria-hidden>
+      <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 function Check() {
   return (
-    <svg viewBox="0 0 16 16" className="mt-0.5 h-4 w-4 shrink-0" aria-hidden>
-      <path d="M3 8.5l3.2 3.2L13 4.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 16 16" className="mt-1 h-4 w-4 shrink-0" aria-hidden>
+      <path d="M3 8.5l3.2 3.2L13 4.8" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
 function Lines({ widths, className = "bg-ink/10" }: { widths: number[]; className?: string }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {widths.map((w, i) => (
         <div key={i} className={`h-1.5 rounded-full ${className}`} style={{ width: `${w}%` }} />
       ))}
@@ -58,94 +73,94 @@ function Lines({ widths, className = "bg-ink/10" }: { widths: number[]; classNam
   );
 }
 
-function HeroVisual() {
+function SmallCta({ children = "Commencer maintenant" }: { children?: React.ReactNode }) {
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[540px]" aria-hidden>
-      {/* Disque et orbites */}
-      <div className="absolute inset-[6%] rounded-full border border-white bg-gradient-to-br from-white/70 via-brand-soft/60 to-violet/10 shadow-[0_40px_120px_-30px_rgba(10,77,255,0.35)] backdrop-blur-sm" />
-      <div className="absolute inset-[22%] animate-spin-slow rounded-full border border-dashed border-ink/25" />
-      <div className="absolute inset-[6%] animate-spin-slow">
-        <Diamond className="absolute left-1/2 top-0 h-3.5 w-3.5 -translate-y-1/2 bg-cyan" />
-        <Diamond className="absolute right-[3%] top-[58%] h-3.5 w-3.5 bg-coral" />
-        <Diamond className="absolute bottom-[11%] left-[12%] h-3.5 w-3.5 bg-sun" />
-      </div>
+    <Link href="/connexion?mode=inscription" className="btn-ghost px-4 py-2 text-[13px]">
+      {children} <Arrow />
+    </Link>
+  );
+}
 
-      {/* Marque centrale */}
-      <div className="absolute inset-0 grid place-items-center">
-        <Mark className="h-[38%] w-[38%] drop-shadow-[0_24px_40px_rgba(10,77,255,0.35)]" />
+/** Mini CV dessiné en CSS, réutilisé dans plusieurs sections. */
+function MiniCv({ name, role, chip = "bg-brand-soft text-brand-dark", className = "" }: { name: string; role: string; chip?: string; className?: string }) {
+  return (
+    <div className={`rounded-xl bg-white p-4 shadow-[0_12px_30px_-14px_rgba(11,11,20,0.35)] ${className}`}>
+      <p className="text-center text-[13px] font-bold leading-tight">{name}</p>
+      <p className="text-center text-[9px] text-muted">{role}</p>
+      <p className="mt-3 border-b border-line pb-0.5 text-[8px] font-bold uppercase tracking-wider">Expériences</p>
+      <div className="mt-2">
+        <Lines widths={[70, 100, 92]} />
       </div>
-
-      {/* Carte CV */}
-      <div className="absolute left-0 top-[9%] w-[41%] animate-float">
-        <div className="glass rounded-3xl p-4">
-          <div className="flex items-center gap-2.5">
-            <span className="h-8 w-8 rounded-full bg-gradient-to-br from-brand to-violet" />
-            <div className="flex-1">
-              <div className="h-2 w-3/4 rounded-full bg-ink/80" />
-              <div className="mt-1.5 h-1.5 w-1/2 rounded-full bg-ink/20" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <Lines widths={[100, 86, 94]} />
-          </div>
-          <div className="mt-3 flex gap-1.5">
-            <span className="h-4 w-10 rounded-full bg-brand-soft" />
-            <span className="h-4 w-14 rounded-full bg-brand-soft" />
-            <span className="h-4 w-8 rounded-full bg-brand-soft" />
-          </div>
-        </div>
-        <p className="mt-2.5 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-          <span className="glass rounded-full px-2.5 py-1">CV ciblé</span>
-        </p>
+      <div className="mt-2.5">
+        <Lines widths={[60, 96, 84]} />
       </div>
-
-      {/* Carte lettre */}
-      <div className="absolute right-0 top-[4%] w-[36%] animate-float [animation-delay:-2.5s]">
-        <div className="rounded-3xl bg-ink p-4 text-white shadow-[0_24px_60px_-20px_rgba(0,17,61,0.7)]">
-          <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/50">Objet</p>
-          <div className="mt-2 h-2 w-5/6 rounded-full bg-white/90" />
-          <div className="mt-4">
-            <Lines widths={[100, 92, 97, 60]} className="bg-white/25" />
-          </div>
-          <div className="mt-3 h-1.5 w-8 rounded-full bg-cyan" />
-        </div>
-        <p className="mt-2.5 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-          <span className="glass rounded-full px-2.5 py-1">Lettre</span>
-        </p>
-      </div>
-
-      {/* Carte suivi */}
-      <div className="absolute bottom-[3%] right-[10%] w-[46%] animate-float [animation-delay:-4.5s]">
-        <div className="glass rounded-3xl p-4">
-          {[
-            { c: "bg-sun", t: "Entretien", w: "w-16" },
-            { c: "bg-brand", t: "Postulé", w: "w-20" },
-            { c: "bg-violet", t: "Offre", w: "w-12" },
-          ].map((r) => (
-            <div key={r.t} className="flex items-center gap-2.5 py-1.5">
-              <Diamond className={`h-2 w-2 ${r.c}`} />
-              <span className={`h-1.5 rounded-full bg-ink/20 ${r.w}`} />
-              <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-[10px] font-medium shadow-sm">{r.t}</span>
-            </div>
-          ))}
-        </div>
-        <p className="mt-2.5 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-          <span className="glass rounded-full px-2.5 py-1">Suivi</span>
-        </p>
+      <p className="mt-3 border-b border-line pb-0.5 text-[8px] font-bold uppercase tracking-wider">Compétences</p>
+      <div className="mt-2 flex flex-wrap gap-1">
+        {[26, 34, 22, 30].map((w, i) => (
+          <span key={i} className={`h-3 rounded-full ${chip}`} style={{ width: w }} />
+        ))}
       </div>
     </div>
   );
 }
 
-function MarqueeRow({ outline = false }: { outline?: boolean }) {
-  const items = [...marquee, ...marquee, ...marquee, ...marquee];
+function HeroMockup() {
   return (
-    <div className="flex overflow-hidden">
-      <div className={`flex shrink-0 items-center gap-8 pr-8 ${outline ? "animate-marquee-reverse" : "animate-marquee"}`}>
-        {items.map((m, i) => (
-          <span key={i} className="flex items-center gap-8 whitespace-nowrap">
-            <span className={`text-4xl font-medium tracking-[-0.04em] sm:text-6xl ${outline ? "text-outline" : ""}`}>{m}</span>
-            <Mark className={`h-7 w-7 sm:h-9 sm:w-9 ${outline ? "opacity-40" : ""}`} />
+    <div className="relative mx-auto mt-14 max-w-4xl" aria-hidden>
+      <div className="rounded-[28px] border border-white bg-white/70 p-2.5 shadow-[0_40px_80px_-40px_rgba(91,77,255,0.55)] backdrop-blur">
+        <div className="overflow-hidden rounded-[20px] bg-white">
+          <div className="flex items-center gap-1.5 border-b border-line px-4 py-3">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+            <span className="ml-3 hidden h-6 flex-1 rounded-full bg-cream sm:block" />
+          </div>
+          <div className="grid gap-5 p-5 text-left sm:grid-cols-[1fr_1.25fr] sm:p-7">
+            <div className="space-y-3.5">
+              {[
+                { l: "Poste visé", v: "Cheffe de projet digital" },
+                { l: "Entreprise", v: "Atelier Nord" },
+              ].map((f) => (
+                <div key={f.l}>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">{f.l}</p>
+                  <p className="mt-1.5 rounded-xl border border-line px-3 py-2 text-[13px] font-medium">{f.v}</p>
+                </div>
+              ))}
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">Texte de l'offre</p>
+                <div className="mt-1.5 rounded-xl border border-line p-3">
+                  <Lines widths={[100, 94, 98, 88, 60]} />
+                </div>
+              </div>
+              <div className="btn-blue w-full py-2.5 text-[13px]">Générer mon CV</div>
+            </div>
+            <div className="relative rounded-2xl bg-cream p-4 sm:p-6">
+              <MiniCv name="Camille Martin" role="Cheffe de projet digital" />
+              <div className="absolute -bottom-4 left-1/2 flex w-[92%] -translate-x-1/2 items-center gap-2 rounded-full bg-white p-[3px] shadow-[0_14px_30px_-12px_rgba(166,61,255,0.6)]">
+                <span className="tile-alt absolute inset-0 rounded-full" />
+                <span className="relative flex w-full items-center justify-between rounded-full bg-white px-4 py-2.5 text-[13px]">
+                  Mettre en avant la gestion de budget<span className="ml-0.5 inline-block h-4 w-px animate-pulse bg-ink" />
+                  <span className="text-gradient text-base">✦</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Ticker() {
+  const items = [...jobs, ...jobs];
+  return (
+    <div className="relative mt-16 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]" aria-hidden>
+      <div className="flex w-max animate-marquee gap-3 pr-3">
+        {items.map((j, i) => (
+          <span key={i} className="flex items-center gap-2.5 whitespace-nowrap rounded-full bg-white px-4 py-2 text-[13px] shadow-[0_1px_2px_rgba(11,11,20,0.05)]">
+            <span className={`h-5 w-5 rounded-md ${["bg-brand-soft", "bg-[#ffe1ea]", "bg-[#dcefff]", "bg-[#ffe9cc]", "bg-[#d9f3e2]"][i % 5]}`} />
+            <span className="font-semibold">{j}</span>
+            <span className="text-muted">CV + lettre</span>
           </span>
         ))}
       </div>
@@ -153,224 +168,325 @@ function MarqueeRow({ outline = false }: { outline?: boolean }) {
   );
 }
 
+/** Tuile illustrée : fond dégradé vif + élément d'interface blanc. */
+function Tile({ children, alt = false }: { children: React.ReactNode; alt?: boolean }) {
+  return (
+    <div className={`${alt ? "tile-alt" : "tile"} relative mt-5 grid h-52 place-items-center overflow-hidden rounded-3xl p-6`} aria-hidden>
+      <div className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/25 blur-2xl" />
+      {children}
+    </div>
+  );
+}
+
+function DarkPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="relative inline-flex rounded-full p-[2px] shadow-[0_10px_24px_-10px_rgba(11,11,20,0.7)]">
+      <span className="tile-alt absolute inset-0 rounded-full" />
+      <span className="relative rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-white">{children}</span>
+    </span>
+  );
+}
+
+const tools = [
+  {
+    title: "CV sur mesure",
+    text: "Un CV réorganisé pour chaque annonce : les expériences qui comptent passent en premier.",
+    visual: (
+      <div className="relative w-44">
+        <div className="rounded-2xl bg-white/85 p-4 backdrop-blur">
+          <div className="h-2 w-1/2 rounded-full bg-ink/70" />
+          <div className="mt-3">
+            <Lines widths={[100, 90, 96, 70]} className="bg-ink/15" />
+          </div>
+        </div>
+        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
+          <DarkPill>✦ Réécrire la section</DarkPill>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Lettre de motivation IA",
+    text: "Une lettre personnelle en quelques secondes, écrite à partir de ton vrai parcours et de l'offre.",
+    visual: (
+      <div className="relative w-48">
+        <div className="mx-auto mb-2 flex w-max gap-1 rounded-full bg-white/90 p-1 text-[10px] font-semibold">
+          <span className="rounded-full bg-ink px-2.5 py-1 text-white">Formel</span>
+          <span className="px-2 py-1 text-muted">Direct</span>
+          <span className="px-2 py-1 text-muted">Concis</span>
+        </div>
+        <div className="rounded-2xl bg-white/85 p-4 backdrop-blur">
+          <Lines widths={[45, 100, 94, 98, 60]} className="bg-ink/15" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Mots-clés de l'offre",
+    text: "Postulia reprend le vocabulaire de l'annonce pour passer les logiciels de tri des recruteurs.",
+    visual: (
+      <div className="flex w-52 flex-wrap justify-center gap-1.5 text-[11px] font-semibold">
+        {["Gestion de projet", "Agile", "Budget", "Anglais", "Management", "Reporting"].map((k, i) => (
+          <span key={k} className={`rounded-full px-3 py-1.5 ${i % 3 === 0 ? "bg-ink text-white" : "bg-white/90 text-ink"}`}>{k}</span>
+        ))}
+      </div>
+    ),
+  },
+  {
+    title: "Suivi des candidatures",
+    text: "Un tableau clair pour savoir où tu en es : à postuler, postulé, entretien, offre, refus.",
+    visual: (
+      <div className="w-52 space-y-2">
+        {[
+          { t: "Atelier Nord", s: "Entretien", c: "bg-[#ffe9cc] text-[#a85b00]" },
+          { t: "Lumen", s: "Postulé", c: "bg-brand-soft text-brand-dark" },
+          { t: "Solstice", s: "Offre", c: "bg-[#d9f3e2] text-[#157a43]" },
+        ].map((r) => (
+          <div key={r.t} className="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 text-[11px] font-semibold">
+            {r.t}
+            <span className={`rounded-full px-2 py-0.5 text-[10px] ${r.c}`}>{r.s}</span>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  {
+    title: "Export PDF",
+    text: "Chaque document se télécharge en PDF propre, prêt à joindre à ta candidature.",
+    visual: (
+      <div className="relative w-40">
+        <div className="rounded-2xl bg-white/85 p-4 backdrop-blur">
+          <Lines widths={[60, 100, 92, 96, 80, 50]} className="bg-ink/15" />
+        </div>
+        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
+          <DarkPill>↓ Télécharger en PDF</DarkPill>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Tous tes documents rangés",
+    text: "Tes CV et tes lettres sont enregistrés par offre. Retrouve, modifie ou copie en un clic.",
+    visual: (
+      <div className="w-52 space-y-2">
+        {["CV · Cheffe de projet", "Lettre · Cheffe de projet", "CV · Product owner"].map((d) => (
+          <div key={d} className="flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2 text-[11px] font-semibold">
+            <span className="h-4 w-3 rounded-[3px] bg-brand" />
+            {d}
+          </div>
+        ))}
+      </div>
+    ),
+  },
+];
+
 export default function Home() {
   return (
-    <div className="overflow-x-clip">
-      <div className="rainbow fixed inset-x-0 top-0 z-50 h-[3px]" />
+    <div className="relative overflow-x-clip">
+      <div className="aurora" />
 
-      {/* Navigation */}
-      <header className="fixed inset-x-0 top-0 z-40">
-        <div className="mx-auto flex max-w-[1320px] items-center justify-between px-5 py-5 sm:px-8">
-          <div className="glass rounded-full px-4 py-2">
-            <Logo />
-          </div>
-          <nav className="glass flex items-center gap-1 rounded-full p-1.5 text-sm">
-            <a href="#fonctionnalites" className="hidden rounded-full px-4 py-2 text-ink/80 transition hover:text-ink md:block">
-              Fonctionnalités <sup className="font-mono text-[9px] text-muted">01</sup>
-            </a>
-            <a href="#tarifs" className="hidden rounded-full px-4 py-2 text-ink/80 transition hover:text-ink md:block">
-              Tarifs <sup className="font-mono text-[9px] text-muted">02</sup>
-            </a>
-            <Link href="/connexion" className="hidden rounded-full px-4 py-2 text-ink/80 transition hover:text-ink sm:block">
-              Se connecter
-            </Link>
-            <Link href="/connexion?mode=inscription" className="btn-blue px-5 py-2.5">
-              Commencer
-            </Link>
-          </nav>
+      <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-5 py-6 sm:px-8">
+        <div className="flex items-center gap-5">
+          <Logo />
+          <span className="hidden h-6 w-px bg-ink/15 md:block" />
+          <span className="hidden items-center gap-2 text-sm text-muted md:flex">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
+            Gratuit pour commencer
+          </span>
         </div>
+        <nav className="flex items-center gap-2">
+          <a href="#tarifs" className="hidden px-4 py-2 text-[15px] font-semibold sm:block">Tarifs</a>
+          <Link href="/connexion" className="hidden px-4 py-2 text-[15px] font-semibold sm:block">Se connecter</Link>
+          <Link href="/connexion?mode=inscription" className="btn-blue px-5 py-2.5 text-[15px]">S'inscrire</Link>
+        </nav>
       </header>
 
-      <main>
+      <main className="relative">
         {/* Hero */}
-        <section className="relative">
-          <div className="aurora" />
-          <div className="relative mx-auto grid max-w-[1320px] items-center gap-12 px-5 pb-16 pt-36 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:pb-24 lg:pt-44">
-            <div>
-              <p className="eyebrow">Assistant de candidature · IA</p>
-              <h1 className="mt-6 text-[clamp(2.9rem,7vw,5.25rem)] font-medium leading-[0.98] tracking-[-0.045em]">
-                Une candidature
-                <br />
-                sur mesure,
-                <br />
-                <span className="text-gradient">à chaque offre.</span>
-              </h1>
-              <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-                Postulia rédige ton CV et ta lettre de motivation à partir de ton parcours et de l'annonce, puis t'aide à
-                suivre toutes tes candidatures au même endroit.
-              </p>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Link href="/connexion?mode=inscription" className="btn px-7 py-4 text-base">
-                  Créer mon compte
-                </Link>
-                <a href="#fonctionnement" className="btn-ghost px-7 py-4 text-base">
-                  Comment ça marche
-                </a>
-              </div>
-              <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Gratuit pour commencer · Sans carte bancaire</p>
-            </div>
-            <HeroVisual />
-          </div>
+        <section className="mx-auto max-w-6xl px-5 pt-8 text-center sm:px-8 sm:pt-12">
+          <p className="mx-auto inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-sm font-semibold shadow-[0_1px_2px_rgba(11,11,20,0.05)] backdrop-blur">
+            <span className="text-gradient">✦</span> CV et lettre adaptés à chaque annonce
+          </p>
+          <h1 className="mx-auto mt-7 max-w-5xl text-[clamp(2.1rem,5vw,3.5rem)] leading-[1.12]">
+            <span className="block text-balance font-normal">Ne réécris plus ton CV pour chaque offre.</span>
+            <span className="text-gradient block text-balance font-bold">Postule avec une candidature sur mesure.</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink/80">
+            Postulia rédige ton CV et ta lettre de motivation à partir de ton parcours et de l'annonce, puis t'aide à
+            suivre toutes tes candidatures au même endroit.
+          </p>
+          <Link href="/connexion?mode=inscription" className="btn-blue mt-8 px-7 py-4 text-lg">
+            Commencer maintenant <Arrow />
+          </Link>
+          <p className="mt-4 text-sm text-muted">Sans carte bancaire · 3 générations offertes par jour</p>
 
-          <div className="relative mx-auto max-w-[1320px] px-5 sm:px-8">
-            <dl className="grid grid-cols-2 border-t border-ink/15 lg:grid-cols-4">
-              {stats.map((s, i) => (
-                <div key={s.label} className={`py-7 pr-4 ${i % 2 ? "pl-6 border-l border-ink/15" : ""} ${i > 1 ? "border-t border-ink/15 lg:border-t-0" : ""} ${i === 2 ? "lg:border-l lg:pl-6" : ""}`}>
-                  <dd className="text-4xl font-medium tracking-[-0.05em]">{s.value}</dd>
-                  <dt className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">{s.label}</dt>
-                </div>
-              ))}
-            </dl>
-          </div>
+          <HeroMockup />
         </section>
 
-        {/* Bandeau défilant */}
-        <section className="space-y-3 py-20 sm:py-28" aria-hidden>
-          <MarqueeRow />
-          <MarqueeRow outline />
-        </section>
+        <Ticker />
 
-        {/* Fonctionnalités */}
-        <section id="fonctionnalites" className="mx-auto max-w-[1320px] scroll-mt-28 px-5 sm:px-8">
+        {/* Bento */}
+        <section id="fonctionnalites" className="mx-auto max-w-6xl scroll-mt-10 px-5 pt-24 sm:px-8 sm:pt-32">
           <Reveal>
-            <p className="eyebrow">Fonctionnalités</p>
-            <h2 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.05] sm:text-6xl">
-              Moins de temps à rédiger. <span className="text-muted">Plus de temps pour préparer tes entretiens.</span>
+            <h2 className="mx-auto max-w-3xl text-balance text-center text-3xl font-bold leading-[1.1] sm:text-5xl">
+              Une candidature complète pour chaque offre, en quelques minutes
             </h2>
           </Reveal>
-
-          <div className="mt-12 grid gap-5 lg:grid-cols-6">
-            <Reveal className="lg:col-span-4">
-              <article className="card relative h-full overflow-hidden p-8 sm:p-10">
-                <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-brand/15 blur-3xl" />
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-brand">01 — CV</p>
-                <h3 className="mt-4 text-3xl font-medium sm:text-4xl">Un CV réécrit pour l'offre que tu vises</h3>
-                <p className="mt-3 max-w-md text-muted">
-                  Colle l'annonce : Postulia réorganise ton parcours et reprend les mots-clés du poste, pour passer les
-                  logiciels de tri comme la lecture du recruteur.
-                </p>
-                <div className="relative mt-8 grid gap-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-                  <div className="rounded-2xl border border-line bg-cream p-5">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Offre</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-medium">
-                      {["Gestion de projet", "Agile", "Budget", "Anglais courant", "Management"].map((k) => (
-                        <span key={k} className="rounded-full border border-brand/20 bg-brand-soft px-2.5 py-1 text-brand-dark">{k}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="grid h-10 w-10 place-items-center justify-self-center rounded-full bg-ink text-white sm:rotate-0">→</div>
-                  <div className="rounded-2xl border border-line bg-white p-5 shadow-[0_16px_40px_-24px_rgba(10,77,255,0.5)]">
-                    <div className="h-2.5 w-2/5 rounded-full bg-ink" />
-                    <div className="mt-1.5 h-1.5 w-1/4 rounded-full bg-brand" />
-                    <div className="mt-4">
-                      <Lines widths={[100, 90, 96, 72]} />
-                    </div>
+          <div className="mt-12 grid gap-4 md:grid-cols-2">
+            <Reveal>
+              <article className="card relative h-full overflow-hidden pb-0 sm:p-8 sm:pb-0">
+                <p className="eyebrow">Prépare-toi</p>
+                <h3 className="mt-3 text-2xl font-semibold">Créateur de CV par IA</h3>
+                <p className="mt-2 max-w-sm text-lg leading-snug text-muted">Un CV réécrit pour chaque candidature, à partir de tes compétences et de ton expérience.</p>
+                <div className="mt-5">
+                  <SmallCta />
+                </div>
+                <div className="relative mx-auto mt-8 w-64" aria-hidden>
+                  <MiniCv name="Camille Martin" role="Cheffe de projet digital" className="rounded-b-none pb-10" />
+                  <div className="absolute -left-10 -right-10 top-[58%] rounded-full p-[3px] shadow-[0_14px_30px_-12px_rgba(166,61,255,0.6)]">
+                    <span className="tile-alt absolute inset-0 rounded-full" />
+                    <span className="relative flex items-center justify-between rounded-full bg-white px-5 py-3 text-sm">
+                      Rendre le texte plus concis<span className="text-gradient">✦</span>
+                    </span>
                   </div>
                 </div>
               </article>
             </Reveal>
-
-            <Reveal className="lg:col-span-2" delay={80}>
-              <article className="relative h-full overflow-hidden rounded-[28px] bg-ink p-8 text-white sm:p-10">
-                <div className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-violet/50 blur-3xl" />
-                <div className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full bg-brand/60 blur-3xl" />
-                <div className="relative">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-cyan">02 — Lettre</p>
-                  <h3 className="mt-4 text-3xl font-medium">Une lettre en une minute</h3>
-                  <p className="mt-3 text-white/65">Claire, personnelle, écrite à partir de ton vrai parcours et de l'offre visée.</p>
-                  <div className="mt-8 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur">
-                    <Lines widths={[55, 100, 94, 98, 40]} className="bg-white/30" />
+            <Reveal delay={80}>
+              <article className="card relative h-full overflow-hidden pb-0 sm:p-8 sm:pb-0">
+                <p className="eyebrow">Postule</p>
+                <h3 className="mt-3 text-2xl font-semibold">Lettre de motivation sur mesure</h3>
+                <p className="mt-2 max-w-sm text-lg leading-snug text-muted">Colle l'annonce, Postulia écrit la lettre. Tu relis, tu ajustes, tu envoies.</p>
+                <div className="mt-5">
+                  <SmallCta />
+                </div>
+                <div className="relative mx-auto mt-8 w-72 rounded-t-2xl bg-white p-5 shadow-[0_12px_30px_-14px_rgba(11,11,20,0.35)]" aria-hidden>
+                  <p className="text-[11px] font-bold">Objet : candidature — cheffe de projet</p>
+                  <p className="mt-3 text-[10px] text-muted">Madame, Monsieur,</p>
+                  <div className="mt-2">
+                    <Lines widths={[100, 96, 92, 98, 70]} />
                   </div>
+                  <div className="mt-3">
+                    <Lines widths={[96, 100, 88, 40]} />
+                  </div>
+                  <span className="absolute -right-5 top-10 rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-white shadow-[0_10px_20px_-8px_rgba(91,77,255,0.8)]">✓ Prête à envoyer</span>
                 </div>
               </article>
             </Reveal>
-
-            <Reveal className="lg:col-span-3">
-              <article className="card relative h-full overflow-hidden p-8 sm:p-10">
-                <div className="pointer-events-none absolute -left-16 -top-20 h-64 w-64 rounded-full bg-sun/25 blur-3xl" />
-                <p className="relative font-mono text-[11px] uppercase tracking-[0.16em] text-brand">03 — Suivi</p>
-                <h3 className="relative mt-4 text-3xl font-medium">Toutes tes candidatures, d'un coup d'œil</h3>
-                <p className="relative mt-3 text-muted">Un tableau simple pour savoir où tu en es, de la première lecture à l'offre signée.</p>
-                <div className="relative mt-8 grid grid-cols-3 gap-2.5">
-                  {[
-                    { t: "Postulé", c: "bg-brand", n: 2 },
-                    { t: "Entretien", c: "bg-sun", n: 1 },
-                    { t: "Offre", c: "bg-violet", n: 1 },
-                  ].map((col) => (
-                    <div key={col.t} className="rounded-2xl border border-line bg-cream p-3">
-                      <p className="flex items-center gap-1.5 text-xs font-medium">
-                        <Diamond className={`h-1.5 w-1.5 ${col.c}`} />
-                        {col.t}
-                      </p>
-                      <div className="mt-3 space-y-2">
-                        {Array.from({ length: col.n }).map((_, i) => (
-                          <div key={i} className="rounded-xl border border-line bg-white p-2.5">
-                            <div className="h-1.5 w-3/4 rounded-full bg-ink/70" />
-                            <div className="mt-1.5 h-1.5 w-1/2 rounded-full bg-ink/15" />
-                          </div>
-                        ))}
+            <Reveal className="md:col-span-2">
+              <article className="grid overflow-hidden rounded-[28px] bg-white shadow-[0_1px_2px_rgba(11,11,20,0.04),0_20px_40px_-28px_rgba(11,11,20,0.18)] md:grid-cols-[2fr_3fr]">
+                <div className="p-6 sm:p-8">
+                  <p className="eyebrow">Réussis</p>
+                  <h3 className="mt-3 text-2xl font-semibold">Suivi des candidatures</h3>
+                  <p className="mt-2 text-lg leading-snug text-muted">Chaque offre, son statut et ses documents, dans un seul tableau.</p>
+                  <div className="mt-5">
+                    <SmallCta />
+                  </div>
+                  <p className="mt-8 text-sm leading-relaxed text-muted">
+                    De « à postuler » jusqu'à « offre » : tu sais toujours qui relancer, et quel CV tu as envoyé à qui.
+                  </p>
+                </div>
+                <div className="grid place-items-center bg-[#e9e9ee] p-6 sm:p-10" aria-hidden>
+                  <div className="grid w-full max-w-md grid-cols-3 gap-2.5">
+                    {[
+                      { t: "Postulé", items: ["Lumen", "Orbe"] },
+                      { t: "Entretien", items: ["Atelier Nord"] },
+                      { t: "Offre", items: ["Solstice"] },
+                    ].map((col) => (
+                      <div key={col.t} className="rounded-2xl bg-white/70 p-2.5 backdrop-blur">
+                        <p className="px-1 text-[11px] font-semibold">{col.t}</p>
+                        <div className="mt-2 space-y-2">
+                          {col.items.map((it) => (
+                            <div key={it} className="rounded-xl bg-white p-2.5 shadow-sm">
+                              <p className="text-[11px] font-semibold">{it}</p>
+                              <div className="mt-1.5 h-1.5 w-2/3 rounded-full bg-ink/10" />
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            </Reveal>
-
-            <Reveal className="lg:col-span-3" delay={80}>
-              <article className="card relative h-full overflow-hidden p-8 sm:p-10">
-                <div className="pointer-events-none absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-cyan/25 blur-3xl" />
-                <p className="relative font-mono text-[11px] uppercase tracking-[0.16em] text-brand">04 — Documents</p>
-                <h3 className="relative mt-4 text-3xl font-medium">Tes documents rangés, prêts à partir</h3>
-                <p className="relative mt-3 text-muted">Chaque CV et chaque lettre sont enregistrés. Modifie, copie ou exporte en PDF en un clic.</p>
-                <div className="relative mt-8 space-y-2.5">
-                  {["CV — Cheffe de projet · Atelier Nord", "Lettre — Cheffe de projet · Atelier Nord", "CV — Product owner · Lumen"].map((d, i) => (
-                    <div key={d} className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3">
-                      <Diamond className={`h-2 w-2 ${["bg-brand", "bg-violet", "bg-cyan"][i]}`} />
-                      <span className="truncate text-sm font-medium">{d}</span>
-                      <span className="ml-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">PDF</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </article>
             </Reveal>
           </div>
         </section>
 
-        {/* Fonctionnement */}
-        <section id="fonctionnement" className="mx-auto max-w-[1320px] scroll-mt-28 px-5 pt-28 sm:px-8 sm:pt-40">
+        {/* Grille d'outils */}
+        <section className="mx-auto max-w-6xl px-5 pt-28 sm:px-8 sm:pt-40">
           <Reveal>
-            <p className="eyebrow">Comment ça marche</p>
-            <h2 className="mt-5 text-4xl font-medium leading-[1.05] sm:text-6xl">Trois étapes, pas une de plus.</h2>
+            <h2 className="mx-auto max-w-3xl text-balance text-center text-3xl leading-[1.1] sm:text-5xl">
+              Tout ce qu'il te faut pour décrocher des entretiens <span className="text-gradient font-bold">plus vite</span>
+            </h2>
           </Reveal>
-          <ol className="mt-12 grid gap-5 md:grid-cols-3">
-            {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i * 90}>
-                <li className="card h-full list-none p-8">
-                  <div className="flex items-center justify-between">
-                    <span className="text-6xl font-medium tracking-[-0.06em] text-gradient">{s.n}</span>
-                    <Diamond className={`h-3 w-3 ${["bg-violet", "bg-cyan", "bg-sun"][i]}`} />
-                  </div>
-                  <h3 className="mt-8 text-2xl font-medium">{s.title}</h3>
-                  <p className="mt-3 text-muted">{s.text}</p>
-                </li>
+          <div className="mt-16 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+            {tools.map((t, i) => (
+              <Reveal key={t.title} delay={(i % 3) * 80}>
+                <h3 className="text-xl font-semibold">{t.title}</h3>
+                <p className="mt-3 min-h-[4.5rem] text-[15px] leading-relaxed text-ink/80">{t.text}</p>
+                <Tile alt={i % 2 === 1}>{t.visual}</Tile>
               </Reveal>
             ))}
-          </ol>
+          </div>
+        </section>
+
+        {/* Appel à l'action intermédiaire */}
+        <section className="mx-auto max-w-6xl px-5 pt-10 text-center sm:px-8">
+          <svg viewBox="0 0 800 160" className="mx-auto hidden w-full max-w-3xl text-ink/15 sm:block" fill="none" aria-hidden>
+            <path d="M40 0C60 90 280 70 372 160" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M760 0C740 90 520 70 428 160" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+          <Reveal>
+            <h2 className="mt-8 text-3xl sm:text-5xl">On t'aide à décrocher ton prochain poste</h2>
+            <Link href="/connexion?mode=inscription" className="btn-blue mt-8 px-7 py-3.5 text-base">
+              Commencer maintenant
+            </Link>
+          </Reveal>
+        </section>
+
+        {/* Exemples de CV */}
+        <section className="mx-auto max-w-6xl px-5 pt-28 sm:px-8 sm:pt-40">
+          <Reveal>
+            <h2 className="text-center text-3xl font-bold leading-[1.1] sm:text-5xl">Un CV pensé pour ton métier</h2>
+            <p className="mx-auto mt-4 max-w-xl text-center text-lg text-muted">Quel que soit le poste, Postulia met en avant ce que le recruteur cherche en premier.</p>
+          </Reveal>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {examples.map((e, i) => (
+              <Reveal key={e.job} delay={(i % 3) * 80}>
+                <Link href="/connexion?mode=inscription" className="group block h-full overflow-hidden rounded-[24px] bg-white shadow-[0_1px_2px_rgba(11,11,20,0.04),0_20px_40px_-28px_rgba(11,11,20,0.18)] transition duration-300 hover:-translate-y-1">
+                  <div className={`bg-gradient-to-b ${e.tint} px-10 pt-7`} aria-hidden>
+                    <MiniCv name={["Emma Rodrigues", "David Wilson", "Lisa Thompson", "Nora Benali", "Hugo Lambert", "Inès Moreau"][i]} role={e.job} chip={e.chip} className="rounded-b-none transition duration-300 group-hover:-translate-y-1" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold">{e.job}</h3>
+                    <p className="mt-1.5 text-muted">{e.text}</p>
+                    <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand">
+                      Créer ce CV <Arrow />
+                    </p>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+          <p className="mt-6 text-center text-sm text-muted">Exemples illustratifs : ton CV est toujours rédigé à partir de ton propre parcours.</p>
         </section>
 
         {/* Tarifs */}
-        <section id="tarifs" className="mx-auto max-w-[1320px] scroll-mt-28 px-5 pt-28 sm:px-8 sm:pt-40">
+        <section id="tarifs" className="mx-auto max-w-5xl scroll-mt-10 px-5 pt-28 sm:px-8 sm:pt-40">
           <Reveal>
-            <p className="eyebrow">Tarifs</p>
-            <h2 className="mt-5 text-4xl font-medium leading-[1.05] sm:text-6xl">Simple, sans engagement.</h2>
+            <p className="mx-auto w-max rounded-full bg-white px-4 py-1.5 text-sm font-semibold shadow-[0_1px_2px_rgba(11,11,20,0.05)]">
+              <span className="text-brand">★</span> Sans engagement
+            </p>
+            <h2 className="mt-5 text-center text-3xl font-bold leading-[1.1] sm:text-5xl">Un tarif simple</h2>
+            <p className="mx-auto mt-4 max-w-xl text-center text-lg text-muted">Commence gratuitement. Passe à Pro quand ta recherche s'accélère.</p>
           </Reveal>
-          <div className="mt-12 grid gap-5 lg:grid-cols-2">
+          <div className="mt-12 grid gap-5 md:grid-cols-2">
             <Reveal>
-              <div className="card flex h-full flex-col p-8 sm:p-10">
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Gratuit</p>
-                <p className="mt-5 text-6xl font-medium tracking-[-0.05em]">0 €</p>
+              <div className="card flex h-full flex-col sm:p-9">
+                <p className="eyebrow !text-muted">Gratuit</p>
+                <p className="mt-4 text-6xl font-bold tracking-[-0.03em]">0 €</p>
                 <p className="mt-2 text-muted">Pour tester et postuler à quelques offres.</p>
-                <ul className="mt-8 space-y-3 text-[15px]">
+                <ul className="mt-7 space-y-3">
                   {["3 générations par jour", "CV et lettres de motivation", "Suivi des candidatures illimité", "Export PDF"].map((f) => (
                     <li key={f} className="flex gap-3 text-brand">
                       <Check />
@@ -378,34 +494,34 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/connexion?mode=inscription" className="btn-ghost mt-10 w-full py-4 text-base lg:mt-auto">
+                <div className="grow" />
+                <Link href="/connexion?mode=inscription" className="btn-ghost mt-9 w-full py-3.5 text-base">
                   Commencer gratuitement
                 </Link>
               </div>
             </Reveal>
-            <Reveal delay={90}>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[28px] bg-ink p-8 text-white sm:p-10">
-                <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-brand/70 blur-3xl" />
-                <div className="pointer-events-none absolute -bottom-32 left-10 h-72 w-72 rounded-full bg-violet/50 blur-3xl" />
-                <div className="relative flex h-full flex-col">
+            <Reveal delay={80}>
+              <div className="tile-alt relative h-full rounded-[30px] p-[3px] shadow-[0_30px_60px_-30px_rgba(166,61,255,0.7)]">
+                <div className="flex h-full flex-col rounded-[27px] bg-white p-6 sm:p-9">
                   <div className="flex items-center justify-between">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-cyan">Pro</p>
-                    <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em]">Recherche active</span>
+                    <p className="eyebrow">Pro</p>
+                    <span className="rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand-dark">Recherche active</span>
                   </div>
-                  <p className="mt-5 text-6xl font-medium tracking-[-0.05em]">
-                    9,99 € <span className="text-xl font-normal tracking-normal text-white/60">/ mois</span>
+                  <p className="mt-4 text-6xl font-bold tracking-[-0.03em]">
+                    9,99 € <span className="text-xl font-normal tracking-normal text-muted">/ mois</span>
                   </p>
-                  <p className="mt-2 text-white/65">Pour postuler chaque jour, à grande échelle.</p>
-                  <ul className="mt-8 space-y-3 text-[15px]">
+                  <p className="mt-2 text-muted">Pour postuler chaque jour, à grande échelle.</p>
+                  <ul className="mt-7 space-y-3">
                     {["50 générations par jour", "Tout ce qui est inclus dans Gratuit", "Annulable à tout moment", "Paiement sécurisé par Stripe"].map((f) => (
-                      <li key={f} className="flex gap-3 text-cyan">
+                      <li key={f} className="flex gap-3 text-brand">
                         <Check />
-                        <span className="text-white">{f}</span>
+                        <span className="text-ink">{f}</span>
                       </li>
                     ))}
                   </ul>
-                  <Link href="/connexion?mode=inscription" className="btn-blue mt-10 w-full py-4 text-base lg:mt-auto">
-                    Passer à Pro
+                  <div className="grow" />
+                  <Link href="/connexion?mode=inscription" className="btn-blue mt-9 w-full py-3.5 text-base">
+                    Passer à Pro <Arrow />
                   </Link>
                 </div>
               </div>
@@ -414,37 +530,36 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section className="mx-auto grid max-w-[1320px] gap-10 px-5 pt-28 sm:px-8 sm:pt-40 lg:grid-cols-[1fr_1.4fr]">
+        <section className="mx-auto max-w-4xl px-5 pt-28 sm:px-8 sm:pt-40">
           <Reveal>
-            <p className="eyebrow">FAQ</p>
-            <h2 className="mt-5 text-4xl font-medium leading-[1.05] sm:text-6xl">Questions fréquentes</h2>
+            <h2 className="text-center text-3xl font-bold sm:text-5xl">Questions fréquentes</h2>
           </Reveal>
-          <Reveal>
-            <div className="divide-y divide-ink/10 border-y border-ink/10">
-              {faq.map((item) => (
-                <details key={item.q} className="group py-6">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-medium sm:text-xl [&::-webkit-details-marker]:hidden">
-                    {item.q}
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-ink/15 text-xl font-normal transition duration-300 group-open:rotate-45 group-open:bg-ink group-open:text-white">+</span>
-                  </summary>
-                  <p className="mt-4 max-w-2xl leading-relaxed text-muted">{item.a}</p>
-                </details>
-              ))}
-            </div>
-          </Reveal>
+          <div className="mt-10 space-y-3">
+            {faq.map((item) => (
+              <details key={item.q} className="group rounded-2xl bg-white px-6 py-5 shadow-[0_1px_2px_rgba(11,11,20,0.04)]">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold [&::-webkit-details-marker]:hidden">
+                  {item.q}
+                  <svg viewBox="0 0 16 16" className="h-4 w-4 shrink-0 transition duration-300 group-open:rotate-180" aria-hidden>
+                    <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </summary>
+                <p className="mt-3 max-w-3xl leading-relaxed text-muted">{item.a}</p>
+              </details>
+            ))}
+          </div>
         </section>
 
-        {/* Appel à l'action */}
-        <section className="mx-auto max-w-[1320px] px-5 py-28 sm:px-8 sm:py-40">
+        {/* Appel à l'action final */}
+        <section className="mx-auto max-w-6xl px-5 py-28 sm:px-8 sm:py-36">
           <Reveal>
-            <div className="relative overflow-hidden rounded-[36px] border border-line bg-white px-7 py-16 shadow-[0_40px_100px_-50px_rgba(10,77,255,0.45)] sm:px-16 sm:py-24">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_0%_0%,rgba(255,77,77,0.10),transparent_70%),radial-gradient(36rem_22rem_at_55%_0%,rgba(139,69,255,0.14),transparent_70%),radial-gradient(30rem_24rem_at_100%_100%,rgba(31,176,255,0.20),transparent_70%)]" />
-              <Mark className="pointer-events-none absolute -right-10 top-1/2 hidden h-[130%] w-auto -translate-y-1/2 md:block" />
-              <div className="relative max-w-xl">
-                <h2 className="text-4xl font-medium leading-[1.02] sm:text-6xl">Ta prochaine candidature commence ici.</h2>
-                <p className="mt-5 text-lg text-muted">Crée ton compte, décris ton parcours et génère ton premier document.</p>
-                <Link href="/connexion?mode=inscription" className="btn mt-9 px-7 py-4 text-base">
-                  Commencer gratuitement
+            <div className="tile relative overflow-hidden rounded-[36px] px-6 py-16 text-center text-white sm:py-24">
+              <div className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/25 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 right-0 h-80 w-80 rounded-full bg-brand/60 blur-3xl" />
+              <div className="relative">
+                <h2 className="mx-auto max-w-3xl text-balance text-4xl font-bold leading-[1.05] sm:text-6xl">Ta prochaine candidature commence ici.</h2>
+                <p className="mx-auto mt-5 max-w-md text-lg text-white/85">Crée ton compte, décris ton parcours et génère ton premier document.</p>
+                <Link href="/connexion?mode=inscription" className="btn mt-9 px-7 py-4 text-lg">
+                  Commencer maintenant <Arrow />
                 </Link>
               </div>
             </div>
@@ -452,27 +567,24 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-ink text-white">
-        <div className="mx-auto grid max-w-[1320px] gap-12 px-5 py-20 sm:px-8 md:grid-cols-[1.5fr_1fr_1fr]">
+      <footer className="border-t border-line bg-white">
+        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:px-8 md:grid-cols-[1.6fr_1fr_1fr]">
           <div>
-            <Logo light />
-            <p className="mt-6 max-w-xs text-3xl font-medium leading-[1.05] tracking-[-0.04em]">Une candidature sur mesure, pour chaque offre.</p>
+            <Logo />
+            <p className="mt-4 max-w-xs text-muted">Un CV et une lettre de motivation sur mesure pour chaque offre, et un suivi clair de tes candidatures.</p>
           </div>
-          <nav className="space-y-3 text-white/70">
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">Produit</p>
-            <a href="#fonctionnalites" className="block transition hover:text-white">Fonctionnalités</a>
-            <a href="#fonctionnement" className="block transition hover:text-white">Comment ça marche</a>
-            <a href="#tarifs" className="block transition hover:text-white">Tarifs</a>
+          <nav className="space-y-3">
+            <p className="text-xs font-bold uppercase tracking-[0.12em]">Produit</p>
+            <a href="#fonctionnalites" className="block text-muted transition hover:text-ink">Fonctionnalités</a>
+            <a href="#tarifs" className="block text-muted transition hover:text-ink">Tarifs</a>
           </nav>
-          <nav className="space-y-3 text-white/70">
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">Compte</p>
-            <Link href="/connexion" className="block transition hover:text-white">Se connecter</Link>
-            <Link href="/connexion?mode=inscription" className="block transition hover:text-white">Créer un compte</Link>
+          <nav className="space-y-3">
+            <p className="text-xs font-bold uppercase tracking-[0.12em]">Compte</p>
+            <Link href="/connexion" className="block text-muted transition hover:text-ink">Se connecter</Link>
+            <Link href="/connexion?mode=inscription" className="block text-muted transition hover:text-ink">Créer un compte</Link>
           </nav>
         </div>
-        <div className="border-t border-white/10">
-          <p className="mx-auto max-w-[1320px] px-5 py-6 font-mono text-[11px] uppercase tracking-[0.16em] text-white/40 sm:px-8">© 2026 Postulia</p>
-        </div>
+        <p className="border-t border-line py-6 text-center text-sm text-muted">© 2026 Postulia</p>
       </footer>
     </div>
   );

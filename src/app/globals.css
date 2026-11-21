@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-cream: #fbfcff;
+  --color-cream: #f4f4f6;
   --color-paper: #ffffff;
-  --color-ink: #00113d;
-  --color-muted: #55627f;
-  --color-line: #dfe4f0;
-  --color-brand: #0a4dff;
-  --color-brand-dark: #0036c7;
-  --color-brand-soft: #e8eeff;
-  --color-violet: #8b45ff;
+  --color-ink: #0b0b14;
+  --color-muted: #63636f;
+  --color-line: #e6e6ec;
+  --color-brand: #5b4dff;
+  --color-brand-dark: #4436e0;
+  --color-brand-soft: #eeecff;
+  --color-violet: #a63dff;
   --color-cyan: #1fb0ff;
-  --color-sun: #ffb640;
-  --color-coral: #ff4d4d;
+  --color-sun: #ff9f1c;
+  --color-coral: #ff3d77;
   --font-sans: var(--font-body);
   --font-display: var(--font-body);
-  --font-mono: var(--font-code);
-  --animate-marquee: marquee 38s linear infinite;
+  --font-mono: var(--font-body);
+  --animate-marquee: marquee 50s linear infinite;
   --animate-marquee-reverse: marquee 46s linear infinite reverse;
   --animate-float: float 7s ease-in-out infinite;
   --animate-spin-slow: spin 60s linear infinite;
@@ -36,48 +36,44 @@ body {
   background: var(--color-cream);
   color: var(--color-ink);
   font-family: var(--font-body), system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv11";
 }
 
-::selection { background: #0a4dff; color: #fff; }
+::selection { background: #5b4dff; color: #fff; }
 
-h1, h2, h3, .font-display { letter-spacing: -0.035em; }
+h1, h2, h3, .font-display { letter-spacing: -0.02em; }
 
-/* Fond : halos pastel + grille fine */
+/* Fond : grand dôme dégradé derrière le haut de page */
 .aurora {
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto 0;
+  height: 46rem;
   overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(38rem 26rem at 0% 18%, rgba(255, 77, 77, 0.10), transparent 70%),
-    radial-gradient(36rem 30rem at 78% 8%, rgba(139, 69, 255, 0.16), transparent 70%),
-    radial-gradient(34rem 30rem at 100% 62%, rgba(31, 176, 255, 0.18), transparent 70%),
-    radial-gradient(30rem 22rem at 58% 100%, rgba(255, 182, 64, 0.14), transparent 70%);
 }
-.aurora::after {
+.aurora::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(0, 17, 61, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 17, 61, 0.05) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 75% 70% at 60% 35%, #000 20%, transparent 75%);
+  left: 50%;
+  top: -40rem;
+  width: max(110vw, 70rem);
+  height: 84rem;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e3d9f7 0%, #ecdff3 45%, #f1e9f1 75%, rgba(244, 244, 246, 0) 100%);
 }
 
 .text-gradient {
-  background: linear-gradient(95deg, #0a4dff 10%, #8b45ff 90%);
+  background: linear-gradient(92deg, #5b4dff 0%, #a63dff 45%, #ff3d77 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-.text-outline {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(0, 17, 61, 0.16);
+.rainbow { display: none; }
+.tile {
+  background: linear-gradient(135deg, #ff9f1c 0%, #ff3d77 48%, #a63dff 100%);
 }
-.rainbow {
-  background: linear-gradient(90deg, #8b45ff, #0a4dff, #1fb0ff, #ffb640, #ff4d4d);
+.tile-alt {
+  background: linear-gradient(200deg, #ff9f1c 0%, #ff3d77 40%, #5b4dff 100%);
 }
 
 .reveal {
@@ -89,35 +85,31 @@ h1, h2, h3, .font-display { letter-spacing: -0.035em; }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-10px_rgba(0,17,61,0.6)] disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-10px_rgba(11,11,20,0.6)] disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-blue {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:bg-brand-dark hover:shadow-[0_10px_30px_-8px_rgba(10,77,255,0.7)] disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-[inset_0_2px_0_rgba(255,255,255,0.28),inset_0_-3px_0_rgba(0,0,0,0.16),0_10px_24px_-10px_rgba(91,77,255,0.9)] transition duration-200 hover:-translate-y-0.5 hover:bg-brand-dark disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/20 bg-white/70 px-6 py-3 text-sm font-medium text-ink backdrop-blur transition duration-200 hover:border-ink/60 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-sm font-semibold text-ink shadow-[0_1px_2px_rgba(11,11,20,0.06)] transition duration-200 hover:border-ink/40 disabled:pointer-events-none disabled:opacity-50;
   }
   .input {
     @apply w-full rounded-2xl border border-line bg-white px-4 py-3 text-sm outline-none transition placeholder:text-muted/50 focus:border-brand focus:ring-4 focus:ring-brand/10;
   }
   .label {
-    @apply mb-2 block font-mono text-[11px] uppercase tracking-[0.14em] text-muted;
+    @apply mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-muted;
   }
   .card {
-    @apply rounded-[28px] border border-line bg-white p-6 shadow-[0_1px_0_rgba(0,17,61,0.02),0_24px_48px_-32px_rgba(0,17,61,0.18)] sm:p-7;
+    @apply rounded-[28px] bg-white p-6 shadow-[0_1px_2px_rgba(11,11,20,0.04),0_20px_40px_-28px_rgba(11,11,20,0.18)] sm:p-7;
   }
   .glass {
-    @apply border border-white/80 bg-white/65 shadow-[0_8px_32px_-12px_rgba(0,17,61,0.18)] backdrop-blur-xl;
+    @apply border border-white bg-white/75 shadow-[0_8px_30px_-14px_rgba(11,11,20,0.2)] backdrop-blur-xl;
   }
   .eyebrow {
-    @apply inline-flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted;
-  }
-  .eyebrow::before {
-    content: "";
-    @apply h-2 w-2 rotate-45 rounded-[2px] bg-cyan;
+    @apply inline-block text-[12px] font-semibold uppercase tracking-[0.12em] text-brand;
   }
   .page-title {
-    @apply text-3xl font-medium sm:text-4xl;
+    @apply text-3xl font-semibold sm:text-4xl;
   }
 }
 

@@ -1,8 +1,10 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { PLANS, isActive } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 300;
+
+const FAL_URL = "https://fal.run/openrouter/router/openai/v1/chat/completions";
+const FAL_MODEL = process.env.FAL_MODEL ?? "anthropic/claude-sonnet-4.5";
 
 const SYSTEM = `Tu es un conseiller en recrutement francophone expérimenté. Tu rédiges des CV et des lettres de motivation pour le marché du travail français.
 
@@ -31,9 +33,10 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) return Response.json({ error: "Connexion requise." }, { status: 401 });
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const falKey = process.env.FAL_API_KEY ?? process.env.FAL_KEY;
+  if (!falKey) {
     return Response.json(
-      { error: "La génération IA n'est pas encore configurée (clé ANTHROPIC_API_KEY manquante)." },
+      { error: "La génération IA n'est pas encore configurée." },
       { status: 503 },
     );
   }
@@ -79,8 +82,6 @@ export async function POST(request: Request) {
       { status: 429 },
     );
   }
-  await supabase.from("generations").insert({ kind });
-
   const prompt = [
     kind === "cv"
       ? "Rédige un CV adapté à l'offre ci-dessous."
@@ -92,40 +93,66 @@ export async function POST(request: Request) {
     .filter(Boolean)
     .join("\n\n");
 
-  const client = new Anthropic();
-  const stream = client.beta.messages.stream({
-    model: "claude-opus-5-5",
-    max_tokens: 16000,
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
-    output_config: { effort: "medium" },
-    system: SYSTEM,
-    messages: [{ role: "user", content: prompt }],
+  const upstream = await fetch(FAL_URL, {
+    method: "POST",
+    headers: { Authorization: `Key ${falKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: FAL_MODEL,
+      stream: true,
+      max_tokens: 4000,
+      messages: [
+        { role: "system", content: SYSTEM },
+        { role: "user", content: prompt },
+      ],
+    }),
+    signal: request.signal,
+  }).catch((error) => {
+    console.error(error);
+    return null;
   });
 
+  if (!upstream?.ok || !upstream.body) {
+    if (upstream) console.error(`fal ${upstream.status}: ${(await upstream.text()).slice(0, 500)}`);
+    return Response.json({ error: "Le service de rédaction est indisponible. Réessaie dans un instant." }, { status: 502 });
+  }
+  await supabase.from("generations").insert({ kind });
+
+  // Le flux amont est au format SSE « chat completions » : on n'en renvoie que le texte.
   const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  const reader = upstream.body.getReader();
   const readable = new ReadableStream<Uint8Array>({
     async start(controller) {
-      stream.on("text", (text) => controller.enqueue(encoder.encode(text)));
+      let buffer = "";
+      let finish: string | null = null;
       try {
-        const final = await stream.finalMessage();
-        if (final.stop_reason === "refusal") {
-          controller.enqueue(encoder.encode("\n\n[La génération n'a pas pu aboutir pour cette demande.]"));
-        } else if (final.stop_reason === "max_tokens") {
-          controller.enqueue(encoder.encode("\n\n[Document tronqué : longueur maximale atteinte.]"));
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            const data = line.startsWith("data:") ? line.slice(5).trim() : "";
+            if (!data || data === "[DONE]") continue;
+            try {
+              const choice = JSON.parse(data).choices?.[0];
+              if (choice?.delta?.content) controller.enqueue(encoder.encode(choice.delta.content));
+              if (choice?.finish_reason) finish = choice.finish_reason;
+            } catch {
+              // ligne incomplète ou commentaire SSE : ignorée
+            }
+          }
         }
+        if (finish === "length") controller.enqueue(encoder.encode("\n\n[Document tronqué : longueur maximale atteinte.]"));
         controller.close();
       } catch (error) {
-        if (error instanceof Anthropic.APIError) {
-          console.error(`Claude API ${error.status}: ${error.message}`);
-        } else {
-          console.error(error);
-        }
+        console.error(error);
         controller.error(error);
       }
     },
     cancel() {
-      stream.abort();
+      reader.cancel().catch(() => {});
     },
   });
 
