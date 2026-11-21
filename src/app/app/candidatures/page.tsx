@@ -70,7 +70,7 @@ export default function Candidatures() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold">Mes candidatures</h1>
+      <h1 className="page-title">Mes candidatures</h1>
       <form onSubmit={add} className="card mt-6 grid gap-3 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end">
         <div>
           <label className="label" htmlFor="job">Poste</label>
@@ -92,21 +92,21 @@ export default function Candidatures() {
         {STATUSES.map((s) => {
           const list = items.filter((a) => a.status === s.id);
           return (
-            <section key={s.id} className="rounded-2xl border border-line bg-paper/60 p-3">
+            <section key={s.id} className="glass rounded-[24px] p-3">
               <h2 className="flex items-center justify-between px-1 pb-2 text-sm font-semibold">
                 {s.label}
                 <span className="rounded-full bg-line px-2 py-0.5 text-xs">{list.length}</span>
               </h2>
               <div className="space-y-2">
                 {list.map((a) => (
-                  <article key={a.id} className="rounded-xl border border-line bg-paper p-3">
+                  <article key={a.id} className="rounded-2xl border border-line bg-white p-3.5">
                     <p className="text-sm font-semibold">{a.job_title}</p>
                     <p className="text-sm text-muted">{a.company}</p>
                     {a.url && /^https?:\/\//i.test(a.url) && (
                       <a href={a.url} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-brand">Voir l'offre ↗</a>
                     )}
                     <div className="mt-2 flex items-center gap-2">
-                      <select aria-label="Statut" className="input px-2 py-1.5 text-xs" value={a.status} onChange={(e) => setStatus(a.id, e.target.value)}>
+                      <select aria-label="Statut" className="input rounded-xl px-2 py-1.5 text-xs" value={a.status} onChange={(e) => setStatus(a.id, e.target.value)}>
                         {STATUSES.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
                       </select>
                       <button aria-label="Supprimer" className="px-1 text-muted hover:text-red-700" onClick={() => remove(a.id)}>✕</button>

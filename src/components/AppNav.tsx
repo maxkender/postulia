@@ -11,7 +11,8 @@ const links = [
   { href: "/app/lettre", label: "Lettre" },
   { href: "/app/candidatures", label: "Candidatures" },
   { href: "/app/documents", label: "Documents" },
-  { href: "/app/profil", label: "Mon profil" },
+  { href: "/app/profil", label: "Profil" },
+  { href: "/app/abonnement", label: "Abonnement" },
 ];
 
 export function AppNav({ email }: { email: string }) {
@@ -25,30 +26,36 @@ export function AppNav({ email }: { email: string }) {
   }
 
   return (
-    <header className="no-print border-b border-line bg-paper">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+    <header className="no-print sticky top-0 z-30 px-4 pt-4 sm:px-6">
+      <div className="glass mx-auto flex max-w-[1200px] items-center gap-3 rounded-full py-2 pl-5 pr-2">
         <Logo href="/app" />
-        <div className="flex items-center gap-3 text-sm">
-          <span className="hidden text-muted md:block">{email}</span>
-          <button onClick={signOut} className="btn-ghost px-4 py-2">Déconnexion</button>
-        </div>
+        <nav className="mx-auto hidden items-center gap-0.5 lg:flex">
+          {links.map((l) => (
+            <NavLink key={l.href} {...l} pathname={pathname} />
+          ))}
+        </nav>
+        <span className="ml-auto hidden max-w-[14rem] truncate font-mono text-[11px] text-muted xl:block lg:ml-0">{email}</span>
+        <button onClick={signOut} className="btn ml-auto px-5 py-2.5 lg:ml-0">Déconnexion</button>
       </div>
-      <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 sm:px-6">
-        {links.map((l) => {
-          const active = l.href === "/app" ? pathname === "/app" : pathname.startsWith(l.href);
-          return (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium ${
-                active ? "border-brand text-brand-dark" : "border-transparent text-muted hover:text-ink"
-              }`}
-            >
-              {l.label}
-            </Link>
-          );
-        })}
+      <nav className="glass mx-auto mt-2 flex max-w-[1200px] gap-0.5 overflow-x-auto rounded-full p-1.5 lg:hidden">
+        {links.map((l) => (
+          <NavLink key={l.href} {...l} pathname={pathname} />
+        ))}
       </nav>
     </header>
+  );
+}
+
+function NavLink({ href, label, pathname }: { href: string; label: string; pathname: string }) {
+  const active = href === "/app" ? pathname === "/app" : pathname.startsWith(href);
+  return (
+    <Link
+      href={href}
+      className={`whitespace-nowrap rounded-full px-4 py-2 text-sm transition ${
+        active ? "bg-ink font-medium text-white" : "text-ink/70 hover:bg-ink/5 hover:text-ink"
+      }`}
+    >
+      {label}
+    </Link>
   );
 }

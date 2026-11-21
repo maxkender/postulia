@@ -46,7 +46,7 @@ export default function Documents() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold">Mes documents</h1>
+      <h1 className="page-title">Mes documents</h1>
       <div className="mt-6 space-y-2">
         {docs.map((d) => (
           <div key={d.id} className="card flex flex-wrap items-center justify-between gap-3 py-4">

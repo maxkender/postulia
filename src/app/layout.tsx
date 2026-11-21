@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const body = Inter({ variable: "--font-body", subsets: ["latin"] });
-const title = Fraunces({ variable: "--font-title", subsets: ["latin"] });
+const body = Geist({ variable: "--font-body", subsets: ["latin"] });
+const code = Geist_Mono({ variable: "--font-code", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Postulia — Tes candidatures, rédigées avec l'IA",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${body.variable} ${title.variable}`}>
+    <html lang="fr" className={`${body.variable} ${code.variable}`}>
       <body className="min-h-screen antialiased">{children}</body>
     </html>
   );

@@ -35,7 +35,7 @@ export default function Profil() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="font-display text-3xl font-semibold">Mon profil</h1>
+      <h1 className="page-title">Mon profil</h1>
       <p className="mt-2 text-muted">Ces informations servent de base à tous tes documents. Plus c'est précis, meilleur est le résultat.</p>
       <form onSubmit={save} className="card mt-6 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">

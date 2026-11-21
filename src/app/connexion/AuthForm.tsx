@@ -43,8 +43,9 @@ export function AuthForm() {
   }
 
   return (
-    <div className="card">
-      <h1 className="font-display text-2xl font-semibold">{signup ? "Créer un compte" : "Se connecter"}</h1>
+    <div className="card p-8 sm:p-10">
+      <p className="eyebrow">{signup ? "Inscription" : "Connexion"}</p>
+      <h1 className="mt-4 text-3xl font-medium">{signup ? "Crée ton compte" : "Bon retour"}</h1>
       <form onSubmit={submit} className="mt-6 space-y-4">
         <div>
           <label className="label" htmlFor="email">E-mail</label>
@@ -64,15 +65,15 @@ export function AuthForm() {
           />
           {signup && <p className="mt-1.5 text-xs text-muted">8 caractères minimum.</p>}
         </div>
-        {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-        {notice && <p className="rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand-dark">{notice}</p>}
-        <button className="btn w-full" disabled={loading}>
+        {error && <p className="rounded-2xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+        {notice && <p className="rounded-2xl bg-brand-soft px-3 py-2 text-sm text-brand-dark">{notice}</p>}
+        <button className="btn-blue w-full py-3.5" disabled={loading}>
           {loading ? "Un instant…" : signup ? "Créer mon compte" : "Se connecter"}
         </button>
       </form>
       <p className="mt-5 text-center text-sm text-muted">
         {signup ? "Déjà un compte ?" : "Pas encore de compte ?"}{" "}
-        <button type="button" className="font-semibold text-brand" onClick={() => setSignup(!signup)}>
+        <button type="button" className="font-medium text-brand underline-offset-4 hover:underline" onClick={() => setSignup(!signup)}>
           {signup ? "Se connecter" : "S'inscrire"}
         </button>
       </p>

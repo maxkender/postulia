@@ -1,56 +1,80 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { PLANS, isActive } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Dashboard() {
   await connection();
   const supabase = await createClient();
-  const [{ data: profile }, { count: docs }, { data: apps }] = await Promise.all([
+  // eslint-disable-next-line react-hooks/purity -- rendu à la requête (connection() ci-dessus)
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const [{ data: profile }, { count: docs }, { data: apps }, { data: sub }, { count: used }] = await Promise.all([
     supabase.from("profiles").select("full_name, background").maybeSingle(),
     supabase.from("documents").select("id", { count: "exact", head: true }),
     supabase.from("applications").select("status"),
+    supabase.from("subscriptions").select("status").maybeSingle(),
+    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since),
   ]);
   const hasProfile = Boolean(profile?.background?.trim());
   const total = apps?.length ?? 0;
   const interviews = apps?.filter((a) => a.status === "entretien" || a.status === "offre").length ?? 0;
   const firstName = profile?.full_name?.split(" ")[0];
+  const pro = isActive(sub?.status);
+  const limit = pro ? PLANS.pro.dailyGenerations : PLANS.free.dailyGenerations;
+  const left = Math.max(0, limit - (used ?? 0));
+
+  const stats = [
+    { label: "Documents enregistrés", value: docs ?? 0 },
+    { label: "Candidatures suivies", value: total },
+    { label: "Entretiens et offres", value: interviews },
+    { label: `Générations restantes · ${pro ? "Pro" : "Gratuit"}`, value: `${left}/${limit}` },
+  ];
+  const actions = [
+    { href: "/app/cv", n: "01", title: "Générer un CV", text: "Adapté à une offre précise.", dot: "bg-brand" },
+    { href: "/app/lettre", n: "02", title: "Écrire une lettre", text: "Lettre de motivation sur mesure.", dot: "bg-violet" },
+    { href: "/app/candidatures", n: "03", title: "Suivre mes candidatures", text: "Ajoute une offre et son statut.", dot: "bg-sun" },
+  ];
 
   return (
-    <div className="space-y-8">
-      <h1 className="font-display text-3xl font-semibold">Bonjour{firstName ? ` ${firstName}` : ""} 👋</h1>
+    <div className="space-y-10">
+      <div>
+        <p className="eyebrow">Tableau de bord</p>
+        <h1 className="mt-4 text-4xl font-medium sm:text-6xl">
+          Bonjour{firstName ? <span className="text-gradient"> {firstName}</span> : ""}.
+        </h1>
+      </div>
 
       {!hasProfile && (
-        <div className="card flex flex-wrap items-center justify-between gap-4 border-sun bg-sun/15">
-          <div>
-            <p className="font-semibold">Commence par décrire ton parcours</p>
-            <p className="text-sm text-muted">Postulia s'en sert pour rédiger tes CV et tes lettres.</p>
+        <div className="relative flex flex-wrap items-center justify-between gap-5 overflow-hidden rounded-[28px] bg-ink p-7 text-white sm:p-9">
+          <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-brand/70 blur-3xl" />
+          <div className="relative">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-cyan">Première étape</p>
+            <p className="mt-2 text-2xl font-medium tracking-[-0.03em]">Décris ton parcours</p>
+            <p className="mt-1 text-white/65">Postulia s'en sert pour rédiger tes CV et tes lettres.</p>
           </div>
-          <Link href="/app/profil" className="btn">Compléter mon profil</Link>
+          <Link href="/app/profil" className="btn-blue relative">Compléter mon profil</Link>
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {[
-          { label: "Documents enregistrés", value: docs ?? 0 },
-          { label: "Candidatures suivies", value: total },
-          { label: "Entretiens et offres", value: interviews },
-        ].map((s) => (
+      <dl className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {stats.map((s) => (
           <div key={s.label} className="card">
-            <p className="font-display text-4xl font-semibold">{s.value}</p>
-            <p className="mt-1 text-sm text-muted">{s.label}</p>
+            <dd className="text-5xl font-medium tracking-[-0.05em]">{s.value}</dd>
+            <dt className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">{s.label}</dt>
           </div>
         ))}
-      </div>
+      </dl>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {[
-          { href: "/app/cv", title: "Générer un CV", text: "Adapté à une offre précise." },
-          { href: "/app/lettre", title: "Écrire une lettre", text: "Lettre de motivation sur mesure." },
-          { href: "/app/candidatures", title: "Suivre mes candidatures", text: "Ajoute une offre et son statut." },
-        ].map((a) => (
-          <Link key={a.href} href={a.href} className="card transition hover:border-brand">
-            <p className="font-display text-xl font-semibold">{a.title} →</p>
-            <p className="mt-1 text-sm text-muted">{a.text}</p>
+      <div className="grid gap-4 md:grid-cols-3">
+        {actions.map((a) => (
+          <Link key={a.href} href={a.href} className="card group transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_30px_60px_-30px_rgba(10,77,255,0.45)]">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">{a.n}</span>
+              <span className={`h-2.5 w-2.5 rotate-45 rounded-[2px] ${a.dot}`} />
+            </div>
+            <p className="mt-10 text-2xl font-medium tracking-[-0.03em]">{a.title}</p>
+            <p className="mt-1 text-muted">{a.text}</p>
+            <span className="mt-6 grid h-10 w-10 place-items-center rounded-full bg-ink text-white transition group-hover:bg-brand">→</span>
           </Link>
         ))}
       </div>

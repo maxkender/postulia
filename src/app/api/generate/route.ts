@@ -1,9 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { PLANS, isActive } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 300;
-
-const DAILY_LIMIT = 20;
 
 const SYSTEM = `Tu es un conseiller en recrutement francophone expérimenté. Tu rédiges des CV et des lettres de motivation pour le marché du travail français.
 
@@ -63,13 +62,20 @@ export async function POST(request: Request) {
   }
 
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { count } = await supabase
-    .from("generations")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", since);
-  if ((count ?? 0) >= DAILY_LIMIT) {
+  const [{ count }, { data: sub }] = await Promise.all([
+    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since),
+    supabase.from("subscriptions").select("status").eq("user_id", user.id).maybeSingle(),
+  ]);
+  const pro = isActive(sub?.status);
+  const limit = pro ? PLANS.pro.dailyGenerations : PLANS.free.dailyGenerations;
+  if ((count ?? 0) >= limit) {
     return Response.json(
-      { error: `Limite de ${DAILY_LIMIT} générations par 24 h atteinte. Réessaie plus tard.` },
+      {
+        error: pro
+          ? `Limite de ${limit} générations par 24 h atteinte. Réessaie plus tard.`
+          : `Tu as utilisé tes ${limit} générations gratuites du jour. Passe à Pro pour continuer.`,
+        upgrade: !pro,
+      },
       { status: 429 },
     );
   }

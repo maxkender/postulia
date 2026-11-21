@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Markdown } from "./Markdown";
@@ -15,6 +16,7 @@ export function Generator({ kind }: { kind: Kind }) {
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [upgrade, setUpgrade] = useState(false);
   const [status, setStatus] = useState("");
   const abort = useRef<AbortController | null>(null);
 
@@ -24,6 +26,7 @@ export function Generator({ kind }: { kind: Kind }) {
     e.preventDefault();
     setBusy(true);
     setError("");
+    setUpgrade(false);
     setStatus("");
     setOutput("");
     setEditing(false);
@@ -37,6 +40,7 @@ export function Generator({ kind }: { kind: Kind }) {
       });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => null);
+        setUpgrade(Boolean(data?.upgrade));
         throw new Error(data?.error ?? "La génération a échoué. Réessaie dans un instant.");
       }
       const reader = res.body.getReader();
@@ -92,9 +96,14 @@ export function Generator({ kind }: { kind: Kind }) {
         {busy ? (
           <button type="button" className="btn-ghost w-full" onClick={() => abort.current?.abort()}>Arrêter</button>
         ) : (
-          <button className="btn w-full">{output ? "Régénérer" : `Générer ${kind === "cv" ? "mon CV" : "ma lettre"}`}</button>
+          <button className="btn-blue w-full py-3.5">{output ? "Régénérer" : `Générer ${kind === "cv" ? "mon CV" : "ma lettre"}`}</button>
         )}
-        {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+        {error && (
+          <p role="alert" className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}{" "}
+            {upgrade && <Link href="/app/abonnement" className="font-medium underline underline-offset-4">Voir l'offre Pro</Link>}
+          </p>
+        )}
       </form>
 
       <div>
@@ -109,7 +118,7 @@ export function Generator({ kind }: { kind: Kind }) {
         )}
         <div className="card print-area min-h-[28rem]">
           {!output && !busy && <p className="text-muted">Ta {label} apparaîtra ici.</p>}
-          {!output && busy && <p className="animate-pulse text-muted">Rédaction en cours…</p>}
+          {!output && busy && <p className="animate-pulse font-mono text-xs uppercase tracking-[0.16em] text-brand">Rédaction en cours…</p>}
           {output && editing && (
             <textarea className="input min-h-[32rem] font-mono text-[13px]" value={output} onChange={(e) => setOutput(e.target.value)} />
           )}
