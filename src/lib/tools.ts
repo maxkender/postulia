@@ -166,6 +166,96 @@ Structure exacte :
 ## Limites de cette estimation
 Rappelle clairement que c'est un ordre de grandeur issu de connaissances générales, pas de données de marché en temps réel, et qu'il faut le recouper avec des sources à jour (APEC, grilles de convention collective, offres publiées).`,
   },
+  {
+    id: "linkedin-profil",
+    title: "Optimiseur de profil LinkedIn",
+    short: "Réécris ton titre, ton résumé et tes expériences pour attirer les recruteurs.",
+    icon: "badge",
+    cta: "Optimiser mon profil",
+    fields: [
+      { id: "profil", label: "Ton profil LinkedIn actuel (laisse vide pour utiliser ton profil Postulia)", type: "textarea", rows: 9, placeholder: "Copie-colle ton titre, ton résumé et tes expériences", profileFallback: true },
+      { id: "objectif", label: "Poste ou secteur visé", type: "text", required: true },
+    ],
+    system: `${BASE}
+
+Tu optimises un profil LinkedIn pour qu'il ressorte dans les recherches des recruteurs. ${HONESTY}
+Structure exacte :
+## Titre du profil
+(3 propositions de moins de 220 caractères, riches en mots-clés du poste visé)
+## Résumé (section « Infos »)
+(un texte à la première personne, 120 à 180 mots, avec une accroche et un appel à contacter)
+## Expériences réécrites
+(chaque expérience en 2 à 4 puces orientées résultats)
+## Compétences à afficher
+(10 compétences à épingler, par ordre d'importance)
+## Trois actions rapides
+(réglages ou habitudes qui augmentent la visibilité)`,
+  },
+  {
+    id: "recruteur",
+    title: "Message au recruteur",
+    short: "Contacte directement la bonne personne avec un message court et précis.",
+    icon: "send",
+    cta: "Rédiger mon message",
+    fields: [
+      { id: "destinataire", label: "À qui écris-tu ?", type: "text", placeholder: "Ex. Claire Dubois, responsable recrutement chez Lumen", required: true },
+      { id: "poste", label: "Poste visé", type: "text", required: true },
+      { id: "contexte", label: "Contexte (facultatif)", type: "textarea", rows: 4, placeholder: "Ex. j'ai postulé lundi / candidature spontanée / vu son post sur LinkedIn" },
+    ],
+    system: `${BASE}
+
+Tu rédiges une prise de contact avec un recruteur ou un manager, à partir du parcours fourni. ${HONESTY}
+Réponse :
+## Message LinkedIn
+(moins de 300 caractères, personnalisé, avec une raison précise de contacter cette personne)
+## E-mail
+(« **Objet :** … » puis moins de 120 mots, une preuve concrète tirée du parcours, une demande claire)
+## Relance à J+7
+(2 phrases)
+Ton direct et respectueux, sans flatterie ni formules creuses.`,
+  },
+  {
+    id: "recommandation",
+    title: "Demande de recommandation",
+    short: "Demande à un contact de te recommander en interne, sans être lourd.",
+    icon: "users",
+    cta: "Rédiger ma demande",
+    fields: [
+      { id: "contact", label: "Ton contact et votre lien", type: "text", placeholder: "Ex. Karim, ancien collègue chez Orbe, aujourd'hui chez Lumen", required: true },
+      { id: "poste", label: "Poste visé", type: "text", required: true },
+      { id: "entreprise", label: "Entreprise", type: "text", required: true },
+    ],
+    system: `${BASE}
+
+Tu rédiges une demande de recommandation (cooptation) à envoyer à une connaissance qui travaille dans l'entreprise visée. ${HONESTY}
+Réponse :
+## Message
+(moins de 130 mots : rappel du lien, poste visé, pourquoi la personne est légitime, demande précise, porte de sortie polie)
+## Version plus courte
+(pour une messagerie instantanée, 3 phrases)
+## Texte prêt à transmettre
+(4 lignes à la troisième personne que le contact peut copier pour présenter le candidat en interne)`,
+  },
+  {
+    id: "pitch",
+    title: "Pitch de présentation",
+    short: "Prépare ta réponse à « Parlez-moi de vous » en 60 secondes.",
+    icon: "chat",
+    cta: "Créer mon pitch",
+    fields: [
+      { id: "poste", label: "Poste visé", type: "text", required: true },
+      { id: "entreprise", label: "Entreprise (facultatif)", type: "text" },
+    ],
+    system: `${BASE}
+
+Tu prépares la réponse d'un candidat à « Parlez-moi de vous », à partir de son parcours. ${HONESTY}
+Réponse :
+## Pitch de 60 secondes
+(à la première personne, environ 150 mots, structure présent → passé → futur, écrit pour être dit à l'oral)
+## Version 20 secondes
+## Trois points à faire ressortir
+## À éviter`,
+  },
 ];
 
 export function getTool(id: string) {

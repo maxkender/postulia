@@ -45,6 +45,10 @@ const faq = [
     a: "Non. Postulia prépare le dossier complet en un clic, mais c'est toi qui l'envoies. Tu gardes la main sur ce qui part à ton nom, et tu évites les candidatures en masse que les recruteurs repèrent.",
   },
   {
+    q: "Puis-je importer une offre depuis son lien ?",
+    a: "Oui. Colle l'adresse de l'annonce : Postulia remplit le poste, l'entreprise et le texte. Certains sites bloquent la lecture automatique ; dans ce cas, il suffit de coller le texte de l'offre.",
+  },
+  {
     q: "Comment fonctionne la simulation d'entretien ?",
     a: "Un recruteur IA te pose les questions probables pour le poste, une par une. Après chaque réponse, il te dit ce qui est bien et ce qui manque. À la fin, tu reçois un bilan noté avec des conseils.",
   },
@@ -395,12 +399,12 @@ export default function Home() {
                 <div className="p-6 sm:p-8">
                   <p className="eyebrow">Réussis</p>
                   <h3 className="mt-3 text-2xl font-semibold">Suivi des candidatures</h3>
-                  <p className="mt-2 text-lg leading-snug text-muted">Chaque offre, son statut et ses documents, dans un seul tableau.</p>
+                  <p className="mt-2 text-lg leading-snug text-muted">Chaque offre, son statut, ses documents et ses rappels de relance, dans un seul tableau.</p>
                   <div className="mt-5">
                     <SmallCta />
                   </div>
                   <p className="mt-8 text-sm leading-relaxed text-muted">
-                    De « à postuler » jusqu'à « offre » : tu sais toujours qui relancer, et quel CV tu as envoyé à qui.
+                    Importe une annonce depuis son lien, suis ton taux de réponse et garde un carnet de tes contacts : tu sais toujours qui relancer, et quel CV tu as envoyé à qui.
                   </p>
                 </div>
                 <div className="grid place-items-center bg-[#e9e9ee] p-6 sm:p-10" aria-hidden>
@@ -493,7 +497,7 @@ export default function Home() {
               <span className="text-brand">★</span> Inclus dans l'offre gratuite
             </p>
             <h2 className="mt-5 text-center text-3xl font-bold leading-[1.1] sm:text-5xl">Une boîte à outils pour chaque étape</h2>
-            <p className="mx-auto mt-4 max-w-xl text-center text-lg text-muted">Vérifie ton CV, rédige une relance, prépare l'entretien, négocie ton salaire.</p>
+            <p className="mx-auto mt-4 max-w-xl text-center text-lg text-muted">Vérifie ton CV, optimise ton profil LinkedIn, écris au recruteur, prépare l'entretien, négocie ton salaire.</p>
           </Reveal>
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {TOOLS.map((t, n) => (
@@ -568,7 +572,7 @@ export default function Home() {
                 <p className="mt-4 text-6xl font-bold tracking-[-0.03em]">0 €</p>
                 <p className="mt-2 text-muted">Pour tester et postuler à quelques offres.</p>
                 <ul className="mt-7 space-y-3">
-                  {["3 générations par jour", "CV, lettres et candidature express", "Simulation d'entretien et 8 outils", "Suivi des candidatures et export PDF"].map((f) => (
+                  {["3 générations par jour", "CV, lettres et candidature express", `Simulation d'entretien et ${TOOLS.length} outils`, "Suivi des candidatures et export PDF"].map((f) => (
                     <li key={f} className="flex gap-3 text-brand">
                       <Check />
                       <span className="text-ink">{f}</span>

@@ -20,7 +20,7 @@ export function notConfigured() {
 export async function quotaError(supabase: SupabaseClient, user: User) {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const [{ count }, { data: sub }] = await Promise.all([
-    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since),
+    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since).neq("kind", "import"),
     supabase.from("subscriptions").select("status").eq("user_id", user.id).maybeSingle(),
   ]);
   const pro = isActive(sub?.status);
@@ -105,4 +105,26 @@ export async function streamCompletion(opts: {
   return new Response(readable, {
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
   });
+}
+
+/** Appel simple, sans flux : renvoie le texte complet, ou null en cas d'échec. */
+export async function complete(messages: ChatMessage[], maxTokens = 1500) {
+  const key = process.env.FAL_API_KEY ?? process.env.FAL_KEY;
+  try {
+    const res = await fetch(FAL_URL, {
+      method: "POST",
+      headers: { Authorization: `Key ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: FAL_MODEL, max_tokens: maxTokens, messages }),
+    });
+    if (!res.ok) {
+      console.error(`fal ${res.status}: ${(await res.text()).slice(0, 500)}`);
+      return null;
+    }
+    const data = await res.json();
+    const content = data.choices?.[0]?.message?.content;
+    return typeof content === "string" ? content : null;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }

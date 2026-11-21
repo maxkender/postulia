@@ -8,12 +8,15 @@ export default async function Dashboard() {
   const supabase = await createClient();
   // eslint-disable-next-line react-hooks/purity -- rendu à la requête (connection() ci-dessus)
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const [{ data: profile }, { count: docs }, { data: apps }, { data: sub }, { count: used }] = await Promise.all([
+  const day = new Date().toISOString().slice(0, 10);
+  const [{ data: profile }, { count: docs }, { data: apps }, { data: sub }, { count: used }, { data: dueApps }, { data: dueContacts }] = await Promise.all([
     supabase.from("profiles").select("full_name, background").maybeSingle(),
     supabase.from("documents").select("id", { count: "exact", head: true }),
     supabase.from("applications").select("status"),
     supabase.from("subscriptions").select("status").maybeSingle(),
-    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since),
+    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since).neq("kind", "import"),
+    supabase.from("applications").select("id, job_title, company").lte("follow_up_at", day).limit(5),
+    supabase.from("contacts").select("id, name, company").lte("follow_up_at", day).limit(5),
   ]);
   const hasProfile = Boolean(profile?.background?.trim());
   const total = apps?.length ?? 0;
@@ -53,6 +56,20 @@ export default async function Dashboard() {
             <p className="mt-1 text-white/65">Postulia s'en sert pour rédiger tes CV et tes lettres.</p>
           </div>
           <Link href="/app/profil" className="btn-blue relative">Compléter mon profil</Link>
+        </div>
+      )}
+
+      {Boolean(dueApps?.length || dueContacts?.length) && (
+        <div className="card ring-2 ring-coral/40">
+          <p className="eyebrow !text-[#c2185b]">À relancer aujourd'hui</p>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {dueApps?.map((a) => (
+              <li key={a.id}><Link href="/app/candidatures" className="flex items-center justify-between gap-3 rounded-2xl bg-cream px-4 py-3 text-sm"><span><b>{a.job_title}</b> · {a.company}</span><span className="font-semibold text-brand">Suivi →</span></Link></li>
+            ))}
+            {dueContacts?.map((c) => (
+              <li key={c.id}><Link href="/app/contacts" className="flex items-center justify-between gap-3 rounded-2xl bg-cream px-4 py-3 text-sm"><span><b>{c.name}</b>{c.company ? ` · ${c.company}` : ""}</span><span className="font-semibold text-brand">Réseau →</span></Link></li>
+            ))}
+          </ul>
         </div>
       )}
 

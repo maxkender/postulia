@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ErrorNote } from "@/components/ErrorNote";
+import { JobImport } from "@/components/JobImport";
 import { Markdown } from "@/components/Markdown";
 import { createClient } from "@/lib/supabase/client";
 
@@ -61,11 +62,15 @@ export default function Postuler() {
       setStep("saving");
       const supabase = createClient();
       const suffix = `${job.jobTitle}${job.company ? ` · ${job.company}` : ""}`;
+      const { data: app, error: appError } = await supabase
+        .from("applications")
+        .insert({ job_title: job.jobTitle, company: job.company || "Entreprise non précisée", url: url || null, notes: job.jobDescription.slice(0, 4000) || null })
+        .select("id")
+        .single();
       const { error: saveError } = await supabase.from("documents").insert([
-        { kind: "cv", title: `CV — ${suffix}`, job_title: job.jobTitle, company: job.company || null, content: cvText },
-        { kind: "letter", title: `Lettre — ${suffix}`, job_title: job.jobTitle, company: job.company || null, content: letterText },
+        { kind: "cv", title: `CV — ${suffix}`, job_title: job.jobTitle, company: job.company || null, content: cvText, application_id: app?.id ?? null },
+        { kind: "letter", title: `Lettre — ${suffix}`, job_title: job.jobTitle, company: job.company || null, content: letterText, application_id: app?.id ?? null },
       ]);
-      const { error: appError } = await supabase.from("applications").insert({ job_title: job.jobTitle, company: job.company || "Entreprise non précisée", url: url || null });
       if (saveError || appError) throw new Error("Documents générés, mais l'enregistrement a échoué. Copie-les avant de quitter la page.");
       setStep("done");
     } catch (err) {
@@ -91,6 +96,7 @@ export default function Postuler() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <form onSubmit={submit} className="card no-print h-fit space-y-4">
+          <JobImport onImport={(j) => setJob({ jobTitle: j.jobTitle, company: j.company, url: j.url, jobDescription: j.jobDescription })} />
           <div>
             <label className="label" htmlFor="job">Poste visé</label>
             <input id="job" required className="input" value={job.jobTitle} onChange={(e) => setJob({ ...job, jobTitle: e.target.value })} />

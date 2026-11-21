@@ -13,6 +13,7 @@ const links = [
   { href: "/app/entretien", label: "Entretien" },
   { href: "/app/outils", label: "Outils" },
   { href: "/app/candidatures", label: "Suivi" },
+  { href: "/app/contacts", label: "Réseau" },
   { href: "/app/documents", label: "Documents" },
   { href: "/app/profil", label: "Profil" },
   { href: "/app/abonnement", label: "Offre" },
@@ -53,7 +54,7 @@ function NavLink({ href, label, pathname }: { href: string; label: string; pathn
   return (
     <Link
       href={href}
-      className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm transition ${
+      className={`whitespace-nowrap rounded-full px-3 py-2 text-[13.5px] transition ${
         active ? "bg-ink font-medium text-white" : "text-ink/70 hover:bg-ink/5 hover:text-ink"
       }`}
     >

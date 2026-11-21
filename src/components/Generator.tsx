@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { JobImport } from "./JobImport";
 import { Markdown } from "./Markdown";
 
 type Kind = "cv" | "letter";
@@ -77,6 +78,13 @@ export function Generator({ kind }: { kind: Kind }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <form onSubmit={generate} className="card no-print h-fit space-y-4">
+        <JobImport
+          onImport={(j) => {
+            setJobTitle(j.jobTitle);
+            setCompany(j.company);
+            setJobDescription(j.jobDescription);
+          }}
+        />
         <div>
           <label className="label" htmlFor="job">Poste visé</label>
           <input id="job" required className="input" placeholder="Ex. Chargé de communication" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} />
