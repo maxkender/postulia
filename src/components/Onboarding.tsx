@@ -7,14 +7,29 @@ import { OPTIONS, readPending, saveOnboarding, writePending, type Answers } from
 import { createClient } from "@/lib/supabase/client";
 import { GoogleButton } from "./GoogleButton";
 import { Logo } from "./Logo";
+import { ToolIcon } from "./ToolIcon";
 
-type StepId = "situation" | "approche" | "poste" | "experience" | "contrats" | "lieu" | "freins" | "parcours" | "compte";
-const ORDER: StepId[] = ["situation", "approche", "poste", "experience", "contrats", "lieu", "freins", "parcours", "compte"];
-const SECTIONS = [
-  { label: "Toi", steps: ["situation", "approche"] },
-  { label: "Ta recherche", steps: ["poste", "experience", "contrats", "lieu"] },
-  { label: "Tes besoins", steps: ["freins", "parcours"] },
+type StepId =
+  | "situation" | "approche" | "duree" | "info-cible" | "info-main"
+  | "aCv" | "parcours" | "objectifs" | "info-merci"
+  | "ia" | "info-ia"
+  | "poste" | "contrats" | "salaire" | "modes" | "lieux"
+  | "compte";
+
+const SECTIONS: { label: string; steps: StepId[] }[] = [
+  { label: "Toi", steps: ["situation", "approche", "duree", "info-cible", "info-main"] },
+  { label: "Ton parcours", steps: ["aCv", "parcours"] },
+  { label: "Tes objectifs", steps: ["objectifs", "info-merci"] },
+  { label: "L'IA et toi", steps: ["ia", "info-ia"] },
+  { label: "Tes préférences", steps: ["poste", "contrats", "salaire", "modes", "lieux"] },
   { label: "Ton compte", steps: ["compte"] },
+];
+
+const IA_POINTS = [
+  { icon: "spark", title: "Un CV réécrit pour chaque offre", text: "Tes expériences les plus pertinentes passent en premier." },
+  { icon: "search", title: "Les mots-clés que les logiciels de tri attendent", text: "Avec un score de compatibilité avant d'envoyer." },
+  { icon: "chat", title: "Des questions ciblées sur chaque poste", text: "Tes réponses enrichissent ton CV et ta lettre." },
+  { icon: "mic", title: "Un entretien blanc avant le vrai", text: "Un recruteur IA te pose les questions du poste et te corrige." },
 ];
 
 function Option({ selected, onClick, children }: { selected?: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -23,17 +38,25 @@ function Option({ selected, onClick, children }: { selected?: boolean; onClick: 
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`w-full rounded-2xl border-2 bg-white px-6 py-4 text-lg font-medium shadow-[0_1px_2px_rgba(11,11,20,0.05)] transition duration-200 hover:-translate-y-0.5 hover:border-brand/60 sm:py-5 sm:text-xl ${selected ? "border-brand bg-brand-soft text-brand-dark" : "border-transparent"}`}
+      className={`flex w-full items-center gap-4 rounded-[20px] border-2 bg-white px-5 py-4 text-left text-lg font-medium shadow-[0_1px_2px_rgba(11,11,20,0.05)] transition duration-200 hover:-translate-y-0.5 hover:border-brand/50 sm:px-6 sm:py-[1.15rem] sm:text-xl ${selected ? "border-brand bg-brand-soft text-brand-dark" : "border-transparent"}`}
     >
+      <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 text-[11px] font-bold transition ${selected ? "border-brand bg-brand text-white" : "border-line text-transparent"}`}>✓</span>
       {children}
     </button>
   );
 }
 
+function Title({ children, sub }: { children: React.ReactNode; sub?: React.ReactNode }) {
+  return (
+    <>
+      <h1 className="text-balance text-3xl font-semibold leading-[1.1] sm:text-[2.75rem]">{children}</h1>
+      {sub && <p className="mx-auto mt-3 max-w-lg text-lg text-muted">{sub}</p>}
+    </>
+  );
+}
+
 export function Onboarding({ mode }: { mode: "public" | "app" }) {
   const router = useRouter();
-  const steps = mode === "public" ? ORDER : ORDER.filter((s) => s !== "compte");
-  const sections = SECTIONS.filter((s) => mode === "public" || s.label !== "Ton compte");
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [email, setEmail] = useState("");
@@ -41,7 +64,12 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  const sections = SECTIONS.filter((s) => mode === "public" || s.label !== "Ton compte");
+  const steps = sections.flatMap((s) => s.steps);
   const step = steps[index];
+  const section = sections.find((s) => s.steps.includes(step))!;
+  const isLast = index === steps.length - 1;
 
   // Reprend les réponses déjà données dans ce navigateur.
   useEffect(() => {
@@ -50,17 +78,20 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
     if (pending) setAnswers(pending);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [index]);
+
   function set(patch: Answers, advance = false) {
     const next = { ...answers, ...patch };
     setAnswers(next);
     writePending(next);
-    if (advance) setTimeout(() => setIndex((i) => Math.min(i + 1, steps.length - 1)), 180);
+    if (advance) setTimeout(() => setIndex((i) => Math.min(i + 1, steps.length - 1)), 200);
   }
-  const toggle = (key: "contrats" | "freins", value: string) => {
+  function toggle(key: "objectifs" | "contrats" | "modes" | "lieux", value: string) {
     const list = answers[key] ?? [];
     set({ [key]: list.includes(value) ? list.filter((v) => v !== value) : [...list, value] });
-  };
-  const next = () => setIndex((i) => Math.min(i + 1, steps.length - 1));
+  }
 
   async function finishInApp() {
     setBusy(true);
@@ -74,6 +105,7 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
       router.refresh();
     }
   }
+  const next = () => (isLast && mode === "app" ? finishInApp() : setIndex((i) => Math.min(i + 1, steps.length - 1)));
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
@@ -95,9 +127,27 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
     setBusy(false);
   }
 
-  const lastBeforeAccount = step === "parcours";
-  const continueLabel = lastBeforeAccount && mode === "app" ? (busy ? "Enregistrement…" : "Terminer") : "Continuer";
-  const onContinue = lastBeforeAccount && mode === "app" ? finishInApp : next;
+  const cont = (disabled = false) => (
+    <button type="button" onClick={next} disabled={disabled || busy} className="btn-blue mt-7 w-full py-4 text-base">
+      {busy ? "Enregistrement…" : isLast && mode === "app" ? "Terminer" : "Continuer"}
+    </button>
+  );
+  const single = (key: "situation" | "approche" | "duree" | "aCv" | "ia") => (
+    <div className="mt-9 space-y-3">
+      {OPTIONS[key].map((o) => (
+        <Option key={o} selected={answers[key] === o} onClick={() => set({ [key]: o }, true)}>{o}</Option>
+      ))}
+    </div>
+  );
+  const multi = (key: "objectifs" | "contrats" | "modes") => (
+    <div className="mt-8 space-y-3">
+      {OPTIONS[key].map((o) => (
+        <Option key={o} selected={answers[key]?.includes(o)} onClick={() => toggle(key, o)}>{o}</Option>
+      ))}
+    </div>
+  );
+  const salary = answers.salaire ?? 35000;
+  const noCv = answers.aCv === OPTIONS.aCv[1];
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden">
@@ -114,16 +164,18 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
           <Logo href={mode === "public" ? "/" : "/app"} />
           {mode === "public" && <Link href="/connexion" className="absolute right-0 hidden text-sm font-semibold text-muted transition hover:text-ink sm:block">J'ai déjà un compte</Link>}
         </div>
-        <ol className="mt-5 flex gap-2" aria-label="Progression">
-          {sections.map((section) => {
-            const done = section.steps.filter((s) => steps.indexOf(s as StepId) < index).length;
-            const pct = section.steps.includes(step) ? ((done + 0.5) / section.steps.length) * 100 : (done / section.steps.length) * 100;
+        <ol className="mt-5 flex items-center gap-1.5" aria-label="Progression">
+          {sections.map((s, n) => {
+            const first = steps.indexOf(s.steps[0]);
+            const done = Math.max(0, Math.min(s.steps.length, index - first));
+            const pct = s === section ? ((done + 0.4) / s.steps.length) * 100 : (done / s.steps.length) * 100;
             return (
-              <li key={section.label} className="flex-1">
-                <div className="h-2 overflow-hidden rounded-full bg-brand/15">
-                  <div className="h-full rounded-full bg-brand transition-all duration-500" style={{ width: `${pct}%` }} />
-                </div>
-                <p className={`mt-1.5 hidden text-[11px] font-semibold uppercase tracking-[0.1em] sm:block ${section.steps.includes(step) ? "text-brand" : "text-muted/60"}`}>{section.label}</p>
+              <li key={s.label} className="flex flex-1 items-center gap-1.5">
+                <span className={`h-3 w-3 shrink-0 rounded-full transition ${index >= first ? "bg-brand" : "bg-brand/15"}`} />
+                <span className="h-2 flex-1 overflow-hidden rounded-full bg-brand/15">
+                  <span className="block h-full rounded-full bg-brand transition-all duration-500" style={{ width: `${pct}%` }} />
+                </span>
+                {n === sections.length - 1 && <span className={`h-3 w-3 shrink-0 rounded-full ${isLast ? "bg-brand" : "bg-brand/15"}`} />}
               </li>
             );
           })}
@@ -131,77 +183,105 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
       </header>
 
       <main key={step} className="demo-pop relative mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 py-10 text-center">
-        {step === "situation" && (
+        {!step.startsWith("info") && step !== "compte" && index > 2 && <p className="eyebrow mb-4 self-center">{section.label}</p>}
+
+        {step === "situation" && (<><Title>Quelle est ta situation professionnelle aujourd'hui ?</Title>{single("situation")}</>)}
+        {step === "approche" && (<><Title>Comment abordes-tu ta recherche d'emploi en ce moment ?</Title>{single("approche")}</>)}
+        {step === "duree" && (<><Title>Depuis combien de temps cherches-tu ?</Title>{single("duree")}</>)}
+
+        {step === "info-cible" && (
           <>
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Quelle est ta situation aujourd'hui ?</h1>
-            <div className="mt-9 space-y-3">{OPTIONS.situation.map((o) => <Option key={o} selected={answers.situation === o} onClick={() => set({ situation: o }, true)}>{o}</Option>)}</div>
+            <div className="tile mx-auto grid h-20 w-20 place-items-center rounded-[28px] text-white"><ToolIcon name="search" className="h-9 w-9" /></div>
+            <div className="mt-8"><Title sub="Les recruteurs et leurs logiciels de tri cherchent les mots de leur annonce. Un CV adapté à chaque offre a bien plus de chances d'être lu qu'un CV envoyé à l'identique partout.">Une candidature ciblée vaut mieux que dix candidatures identiques</Title></div>
+            {cont()}
           </>
         )}
-        {step === "approche" && (
+        {step === "info-main" && (
           <>
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Où en es-tu dans ta recherche ?</h1>
-            <div className="mt-9 space-y-3">{OPTIONS.approche.map((o) => <Option key={o} selected={answers.approche === o} onClick={() => set({ approche: o }, true)}>{o}</Option>)}</div>
+            <div className="tile-alt mx-auto grid h-20 w-20 place-items-center rounded-[28px] text-white"><ToolIcon name="bolt" className="h-9 w-9" /></div>
+            <div className="mt-8"><Title sub="Analyse de l'annonce, CV, lettre, relance, préparation d'entretien : chaque offre devient un parcours guidé. Tu relis, tu valides, et c'est toi qui envoies.">Postulia prépare tout, tu gardes la main</Title></div>
+            {cont()}
           </>
         )}
-        {step === "poste" && (
-          <form onSubmit={(e) => { e.preventDefault(); next(); }}>
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Quel poste recherches-tu ?</h1>
-            <p className="mt-3 text-lg text-muted">Tu pourras en viser d'autres ensuite.</p>
-            <input autoFocus required maxLength={120} aria-label="Poste recherché" className="input mt-8 py-4 text-center text-lg" placeholder="Ex. Cheffe de projet digital" value={answers.poste ?? ""} onChange={(e) => set({ poste: e.target.value })} />
-            <button className="btn-blue mt-6 w-full py-4 text-base" disabled={!answers.poste?.trim()}>Continuer</button>
-          </form>
-        )}
-        {step === "experience" && (
-          <>
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Combien d'années d'expérience as-tu ?</h1>
-            <div className="mt-9 grid gap-3 sm:grid-cols-2">{OPTIONS.experience.map((o) => <Option key={o} selected={answers.experience === o} onClick={() => set({ experience: o }, true)}>{o}</Option>)}</div>
-          </>
-        )}
-        {step === "contrats" && (
-          <>
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Quel type de contrat vises-tu ?</h1>
-            <p className="mt-3 text-lg text-muted">Plusieurs réponses possibles.</p>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">{OPTIONS.contrats.map((o) => <Option key={o} selected={answers.contrats?.includes(o)} onClick={() => toggle("contrats", o)}>{o}</Option>)}</div>
-            <button type="button" className="btn-blue mt-6 w-full py-4 text-base" disabled={!answers.contrats?.length} onClick={next}>Continuer</button>
-          </>
-        )}
-        {step === "lieu" && (
-          <form onSubmit={(e) => { e.preventDefault(); next(); }}>
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Où veux-tu travailler ?</h1>
-            <input autoFocus required maxLength={120} aria-label="Ville ou région" className="input mt-8 py-4 text-center text-lg" placeholder="Ex. Lyon, ou France entière" value={answers.lieu ?? ""} onChange={(e) => set({ lieu: e.target.value })} />
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {OPTIONS.mode.map((o) => (
-                <button key={o} type="button" aria-pressed={answers.mode === o} onClick={() => set({ mode: o })} className={`rounded-2xl border-2 bg-white px-2 py-3 text-sm font-semibold transition sm:text-base ${answers.mode === o ? "border-brand bg-brand-soft text-brand-dark" : "border-transparent"}`}>{o}</button>
-              ))}
-            </div>
-            <button className="btn-blue mt-6 w-full py-4 text-base" disabled={!answers.lieu?.trim()}>Continuer</button>
-          </form>
-        )}
-        {step === "freins" && (
-          <>
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Qu'est-ce qui te freine le plus ?</h1>
-            <p className="mt-3 text-lg text-muted">Plusieurs réponses possibles.</p>
-            <div className="mt-8 space-y-3">{OPTIONS.freins.map((o) => <Option key={o} selected={answers.freins?.includes(o)} onClick={() => toggle("freins", o)}>{o}</Option>)}</div>
-            <button type="button" className="btn-blue mt-6 w-full py-4 text-base" disabled={!answers.freins?.length} onClick={next}>Continuer</button>
-          </>
-        )}
+
+        {step === "aCv" && (<><Title>As-tu un CV sous la main ?</Title>{single("aCv")}</>)}
         {step === "parcours" && (
-          <form onSubmit={(e) => { e.preventDefault(); onContinue(); }} className="text-left">
-            <h1 className="text-balance text-center text-3xl font-semibold sm:text-5xl">Parle-nous de ton parcours</h1>
-            <p className="mt-3 text-center text-lg text-muted">C'est la matière première de tes CV et de tes lettres. Colle ton CV actuel, même brouillon.</p>
+          <div className="text-left">
+            <div className="text-center">
+              <Title sub={noCv ? "Pas de souci : quelques lignes suffisent pour commencer, Postulia mettra tout en forme." : "Copie-colle son texte, même brouillon : il sert de base à tous tes documents."}>{noCv ? "Décris ton parcours en quelques lignes" : "Colle ton CV pour des documents sur mesure"}</Title>
+            </div>
             <label className="label mt-8" htmlFor="nom">Prénom et nom</label>
             <input id="nom" maxLength={120} autoComplete="name" className="input" value={answers.nom ?? ""} onChange={(e) => set({ nom: e.target.value })} />
-            <label className="label mt-4" htmlFor="parcours">Ton parcours</label>
-            <textarea id="parcours" rows={8} maxLength={20000} className="input" placeholder={"Expériences (poste, entreprise, dates, missions)\nFormation\nCompétences, langues"} value={answers.parcours ?? ""} onChange={(e) => set({ parcours: e.target.value })} />
-            {error && <p role="alert" className="mt-3 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-            <button className="btn-blue mt-6 w-full py-4 text-base" disabled={busy}>{continueLabel}</button>
-            {!answers.parcours?.trim() && <p className="mt-3 text-center text-sm text-muted">Tu peux continuer sans le remplir et le compléter plus tard dans ton profil.</p>}
+            <label className="label mt-4" htmlFor="parcours">{noCv ? "Ton parcours" : "Texte de ton CV"}</label>
+            <textarea id="parcours" rows={8} maxLength={20000} className="input" placeholder={noCv ? "Études, stages, jobs, bénévolat, compétences, langues…" : "Expériences (poste, entreprise, dates, missions)\nFormation\nCompétences, langues"} value={answers.parcours ?? ""} onChange={(e) => set({ parcours: e.target.value })} />
+            {cont()}
+            {!answers.parcours?.trim() && <button type="button" onClick={next} className="mx-auto mt-3 block text-sm font-semibold text-muted underline-offset-4 hover:underline">Passer pour l'instant</button>}
+          </div>
+        )}
+        {step === "objectifs" && (<><Title sub="Plusieurs réponses possibles.">Que recherches-tu ?</Title>{multi("objectifs")}{cont(!answers.objectifs?.length)}</>)}
+        {step === "info-merci" && (
+          <>
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#22c55e] text-4xl text-white">✓</div>
+            <div className="mt-8"><Title sub="Encore quelques questions rapides, et ton espace sera réglé sur le poste que tu vises.">Merci, on y voit plus clair !</Title></div>
+            {cont()}
+          </>
+        )}
+
+        {step === "ia" && (<><Title>As-tu déjà utilisé l'IA pour t'aider dans ta recherche d'emploi ?</Title>{single("ia")}</>)}
+        {step === "info-ia" && (
+          <>
+            <Title>Ce que l'IA fait pour toi dans Postulia</Title>
+            <ul className="mt-8 space-y-3 text-left">
+              {IA_POINTS.map((pt) => (
+                <li key={pt.title} className="flex items-center gap-4 rounded-[20px] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(11,11,20,0.05)]">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-soft text-brand"><ToolIcon name={pt.icon} /></span>
+                  <span>
+                    <span className="block text-lg font-semibold leading-tight">{pt.title}</span>
+                    <span className="block text-sm text-muted">{pt.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {cont()}
+          </>
+        )}
+
+        {step === "poste" && (
+          <form onSubmit={(e) => { e.preventDefault(); next(); }}>
+            <Title sub="Tu pourras en viser d'autres ensuite.">Quel poste recherches-tu ?</Title>
+            <input autoFocus required maxLength={120} aria-label="Poste recherché" className="input mt-8 py-4 text-center text-lg" placeholder="Ex. Cheffe de projet digital" value={answers.poste ?? ""} onChange={(e) => set({ poste: e.target.value })} />
+            <button className="btn-blue mt-7 w-full py-4 text-base" disabled={!answers.poste?.trim()}>Continuer</button>
           </form>
         )}
+        {step === "contrats" && (<><Title sub="Plusieurs réponses possibles.">Quel type de contrat t'intéresse ?</Title>{multi("contrats")}{cont(!answers.contrats?.length)}</>)}
+        {step === "salaire" && (
+          <>
+            <Title sub="Brut par an. Cela reste entre toi et Postulia.">Quel salaire minimum vises-tu ?</Title>
+            <p className="mt-9 text-5xl font-semibold tracking-[-0.03em] sm:text-6xl">{salary >= 150000 ? "150 000 € et plus" : `${salary.toLocaleString("fr-FR")} €`}</p>
+            <input type="range" min={0} max={150000} step={1000} value={salary} aria-label="Salaire minimum souhaité, en euros brut par an" onChange={(e) => set({ salaire: Number(e.target.value) })} className="mt-8 w-full accent-[#5b4dff]" />
+            <div className="mt-1 flex justify-between text-sm text-muted"><span>0 €</span><span>150 000 € et plus</span></div>
+            {cont()}
+            <button type="button" onClick={() => { set({ salaire: null }); next(); }} className="mx-auto mt-3 block text-sm font-semibold text-muted underline-offset-4 hover:underline">Je préfère ne pas répondre</button>
+          </>
+        )}
+        {step === "modes" && (<><Title sub="Plusieurs réponses possibles.">Quel mode de travail préfères-tu ?</Title>{multi("modes")}{cont(!answers.modes?.length)}</>)}
+        {step === "lieux" && (
+          <>
+            <Title sub="Choisis une ou plusieurs zones, ou écris la tienne.">Où aimerais-tu travailler ?</Title>
+            <div className="mt-8 flex flex-wrap justify-center gap-2">
+              {OPTIONS.lieux.map((o) => (
+                <button key={o} type="button" aria-pressed={answers.lieux?.includes(o)} onClick={() => toggle("lieux", o)} className={`rounded-full border-2 px-4 py-2.5 text-base font-medium transition ${answers.lieux?.includes(o) ? "border-brand bg-brand-soft text-brand-dark" : "border-transparent bg-white shadow-[0_1px_2px_rgba(11,11,20,0.05)]"}`}>{o}</button>
+              ))}
+            </div>
+            <input maxLength={120} aria-label="Autre ville ou région" className="input mt-4 py-3.5 text-center" placeholder="Autre ville ou région" value={answers.lieu ?? ""} onChange={(e) => set({ lieu: e.target.value })} />
+            {error && <p role="alert" className="mt-3 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+            {cont(!answers.lieux?.length && !answers.lieu?.trim())}
+          </>
+        )}
+
         {step === "compte" && (
           <div className="mx-auto w-full max-w-md">
-            <h1 className="text-balance text-3xl font-semibold sm:text-5xl">Ton espace est prêt</h1>
-            <p className="mt-3 text-lg text-muted">Crée ton compte pour enregistrer tes réponses{answers.poste ? <> et préparer ta première candidature de <b className="text-ink">{answers.poste}</b></> : ""}.</p>
+            <Title sub={<>Crée ton compte pour enregistrer tes réponses{answers.poste ? <> et lancer ton premier parcours de <b className="text-ink">{answers.poste}</b></> : ""}.</>}>Ton espace est prêt</Title>
             <div className="card mt-8 text-left">
               <GoogleButton />
               <form onSubmit={signUp} className="space-y-4">

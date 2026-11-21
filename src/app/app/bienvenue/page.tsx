@@ -13,7 +13,7 @@ export default function Bienvenue() {
 
   useEffect(() => {
     const pending = readPending();
-    const complete = pending?.situation && pending?.poste;
+    const complete = pending?.situation && pending?.poste && (pending?.lieux?.length || pending?.lieu);
     if (!complete) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- décision unique au montage, selon le stockage local
       setAsk(true);
