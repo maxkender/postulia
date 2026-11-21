@@ -1,4 +1,5 @@
 import { aiConfigured, notConfigured, quotaError, streamCompletion, type ChatMessage } from "@/lib/ai";
+import { describeSearch } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 300;
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
     .map((m) => ({ role: m.role as "user" | "assistant", content: m.content!.slice(0, 6000) }));
   if (history.length > 40) return Response.json({ error: "Entretien trop long : demande le bilan." }, { status: 400 });
 
-  const { data: profile } = await supabase.from("profiles").select("full_name, headline, background").eq("id", user.id).maybeSingle();
+  const { data: profile } = await supabase.from("profiles").select("full_name, headline, background, onboarding").eq("id", user.id).maybeSingle();
 
   // Seul le démarrage d'un entretien compte dans le quota du jour.
   const starting = history.length === 0;
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     if (limited) return limited;
   }
 
-  const context = `<offre>\nPoste : ${jobTitle}\nEntreprise : ${(body.company ?? "").trim().slice(0, 200) || "non précisée"}\n${(body.jobDescription ?? "").trim().slice(0, 12000)}\n</offre>\n\n<candidat>\nNom : ${profile?.full_name ?? ""}\n${profile?.background?.trim() || "(Parcours non renseigné.)"}\n</candidat>`;
+  const context = `<offre>\nPoste : ${jobTitle}\nEntreprise : ${(body.company ?? "").trim().slice(0, 200) || "non précisée"}\n${(body.jobDescription ?? "").trim().slice(0, 12000)}\n</offre>\n\n<candidat>\nNom : ${profile?.full_name ?? ""}\n${describeSearch(profile?.onboarding)}\n${profile?.background?.trim() || "(Parcours non renseigné.)"}\n</candidat>`;
 
   return streamCompletion({
     messages: [

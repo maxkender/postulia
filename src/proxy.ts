@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
     url.pathname = "/connexion";
     return NextResponse.redirect(url);
   }
-  if (user && path === "/connexion") {
+  if (user && (path === "/connexion" || path === "/commencer")) {
     const url = request.nextUrl.clone();
     url.pathname = "/app";
     return NextResponse.redirect(url);
@@ -35,4 +35,4 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/app/:path*", "/connexion"] };
+export const config = { matcher: ["/app/:path*", "/connexion", "/commencer"] };

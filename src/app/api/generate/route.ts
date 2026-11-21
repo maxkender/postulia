@@ -1,4 +1,5 @@
 import { HONESTY, aiConfigured, notConfigured, quotaError, streamCompletion } from "@/lib/ai";
+import { describeSearch } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 300;
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, headline, background")
+    .select("full_name, headline, background, onboarding")
     .eq("id", user.id)
     .maybeSingle();
   if (!profile?.background?.trim()) {
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
 
   const prompt = [
     kind === "cv" ? "Rédige un CV adapté à l'offre ci-dessous." : "Rédige une lettre de motivation pour l'offre ci-dessous.",
-    `<candidat>\nNom : ${profile.full_name ?? ""}\nTitre : ${profile.headline ?? ""}\nE-mail : ${user.email ?? ""}\n\nParcours :\n${profile.background}\n</candidat>`,
+    `<candidat>\nNom : ${profile.full_name ?? ""}\nTitre : ${profile.headline ?? ""}\nE-mail : ${user.email ?? ""}\n${describeSearch(profile.onboarding)}\n\nParcours :\n${profile.background}\n</candidat>`,
     `<offre>\nPoste : ${jobTitle}\nEntreprise : ${company || "non précisée"}\n\n${jobDescription || "(Pas de description fournie.)"}\n</offre>`,
     instructions ? `<consignes>\n${instructions}\n</consignes>` : "",
   ]

@@ -112,7 +112,7 @@ function Lines({ widths, className = "bg-ink/10" }: { widths: number[]; classNam
 
 function SmallCta({ children = "Commencer maintenant" }: { children?: React.ReactNode }) {
   return (
-    <Link href="/connexion?mode=inscription" className="btn-ghost px-4 py-2 text-[13px]">
+    <Link href="/commencer" className="btn-ghost px-4 py-2 text-[13px]">
       {children} <Arrow />
     </Link>
   );
@@ -286,7 +286,7 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-1">
             <Link href="/connexion" className="hidden rounded-full px-4 py-2 text-[15px] font-semibold sm:block">Se connecter</Link>
-            <Link href="/connexion?mode=inscription" className="btn-blue px-5 py-2.5 text-[15px]">S'inscrire</Link>
+            <Link href="/commencer" className="btn-blue px-5 py-2.5 text-[15px]">S'inscrire</Link>
           </div>
         </div>
       </header>
@@ -305,7 +305,7 @@ export default function Home() {
             Postulia rédige ton CV et ta lettre de motivation à partir de ton parcours et de l'annonce, puis t'aide à
             suivre toutes tes candidatures au même endroit.
           </p>
-          <Link href="/connexion?mode=inscription" className="btn-blue mt-8 px-7 py-4 text-lg">
+          <Link href="/commencer" className="btn-blue mt-8 px-7 py-4 text-lg">
             Commencer maintenant <Arrow />
           </Link>
           <p className="mt-4 text-sm text-muted">Sans carte bancaire · 3 générations offertes par jour</p>
@@ -502,7 +502,7 @@ export default function Home() {
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {TOOLS.map((t, n) => (
               <Reveal key={t.id} delay={(n % 4) * 60}>
-                <Link href="/connexion?mode=inscription" className="card group flex h-full flex-col transition duration-300 hover:-translate-y-1">
+                <Link href="/commencer" className="card group flex h-full flex-col transition duration-300 hover:-translate-y-1">
                   <span className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-soft text-brand transition group-hover:bg-brand group-hover:text-white">
                     <ToolIcon name={t.icon} />
                   </span>
@@ -523,7 +523,7 @@ export default function Home() {
           </svg>
           <Reveal>
             <h2 className="mt-8 text-3xl sm:text-5xl">On t'aide à décrocher ton prochain poste</h2>
-            <Link href="/connexion?mode=inscription" className="btn-blue mt-8 px-7 py-3.5 text-base">
+            <Link href="/commencer" className="btn-blue mt-8 px-7 py-3.5 text-base">
               Commencer maintenant
             </Link>
           </Reveal>
@@ -538,7 +538,7 @@ export default function Home() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {examples.map((e, i) => (
               <Reveal key={e.job} delay={(i % 3) * 80}>
-                <Link href="/connexion?mode=inscription" className="group block h-full overflow-hidden rounded-[24px] bg-white shadow-[0_1px_2px_rgba(11,11,20,0.04),0_20px_40px_-28px_rgba(11,11,20,0.18)] transition duration-300 hover:-translate-y-1">
+                <Link href="/commencer" className="group block h-full overflow-hidden rounded-[24px] bg-white shadow-[0_1px_2px_rgba(11,11,20,0.04),0_20px_40px_-28px_rgba(11,11,20,0.18)] transition duration-300 hover:-translate-y-1">
                   <div className={`bg-gradient-to-b ${e.tint} px-10 pt-7`} aria-hidden>
                     <MiniCv name={["Emma Rodrigues", "David Wilson", "Lisa Thompson", "Nora Benali", "Hugo Lambert", "Inès Moreau"][i]} role={e.job} chip={e.chip} className="rounded-b-none transition duration-300 group-hover:-translate-y-1" />
                   </div>
@@ -580,7 +580,7 @@ export default function Home() {
                   ))}
                 </ul>
                 <div className="grow" />
-                <Link href="/connexion?mode=inscription" className="btn-ghost mt-9 w-full py-3.5 text-base">
+                <Link href="/commencer" className="btn-ghost mt-9 w-full py-3.5 text-base">
                   Commencer gratuitement
                 </Link>
               </div>
@@ -605,7 +605,7 @@ export default function Home() {
                     ))}
                   </ul>
                   <div className="grow" />
-                  <Link href="/connexion?mode=inscription" className="btn-blue mt-9 w-full py-3.5 text-base">
+                  <Link href="/commencer" className="btn-blue mt-9 w-full py-3.5 text-base">
                     Passer à Pro <Arrow />
                   </Link>
                 </div>
@@ -643,7 +643,7 @@ export default function Home() {
               <div className="relative">
                 <h2 className="mx-auto max-w-3xl text-balance text-4xl font-bold leading-[1.05] sm:text-6xl">Ta prochaine candidature commence ici.</h2>
                 <p className="mx-auto mt-5 max-w-md text-lg text-white/85">Crée ton compte, décris ton parcours et génère ton premier document.</p>
-                <Link href="/connexion?mode=inscription" className="btn mt-9 px-7 py-4 text-lg">
+                <Link href="/commencer" className="btn mt-9 px-7 py-4 text-lg">
                   Commencer maintenant <Arrow />
                 </Link>
               </div>
@@ -668,7 +668,7 @@ export default function Home() {
           <nav className="space-y-3">
             <p className="text-xs font-bold uppercase tracking-[0.12em]">Compte</p>
             <Link href="/connexion" className="block text-muted transition hover:text-ink">Se connecter</Link>
-            <Link href="/connexion?mode=inscription" className="block text-muted transition hover:text-ink">Créer un compte</Link>
+            <Link href="/commencer" className="block text-muted transition hover:text-ink">Créer un compte</Link>
           </nav>
         </div>
         <p className="border-t border-line py-6 text-center text-sm text-muted">© 2026 Postulia</p>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GoogleButton } from "@/components/GoogleButton";
 import { createClient } from "@/lib/supabase/client";
 
 export function AuthForm() {
@@ -46,7 +47,10 @@ export function AuthForm() {
     <div className="card p-8 sm:p-10">
       <p className="eyebrow">{signup ? "Inscription" : "Connexion"}</p>
       <h1 className="mt-4 text-3xl font-medium">{signup ? "Crée ton compte" : "Bon retour"}</h1>
-      <form onSubmit={submit} className="mt-6 space-y-4">
+      <div className="mt-6">
+        <GoogleButton />
+      </div>
+      <form onSubmit={submit} className="space-y-4">
         <div>
           <label className="label" htmlFor="email">E-mail</label>
           <input id="email" type="email" required autoComplete="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} />

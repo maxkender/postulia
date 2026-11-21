@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { PLANS, isActive } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
@@ -10,7 +11,7 @@ export default async function Dashboard() {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const day = new Date().toISOString().slice(0, 10);
   const [{ data: profile }, { count: docs }, { data: apps }, { data: sub }, { count: used }, { data: dueApps }, { data: dueContacts }] = await Promise.all([
-    supabase.from("profiles").select("full_name, background").maybeSingle(),
+    supabase.from("profiles").select("full_name, background, onboarded_at").maybeSingle(),
     supabase.from("documents").select("id", { count: "exact", head: true }),
     supabase.from("applications").select("status"),
     supabase.from("subscriptions").select("status").maybeSingle(),
@@ -18,6 +19,7 @@ export default async function Dashboard() {
     supabase.from("applications").select("id, job_title, company").lte("follow_up_at", day).limit(5),
     supabase.from("contacts").select("id, name, company").lte("follow_up_at", day).limit(5),
   ]);
+  if (!profile?.onboarded_at) redirect("/app/bienvenue");
   const hasProfile = Boolean(profile?.background?.trim());
   const total = apps?.length ?? 0;
   const interviews = apps?.filter((a) => a.status === "entretien" || a.status === "offre").length ?? 0;

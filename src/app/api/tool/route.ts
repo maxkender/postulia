@@ -1,4 +1,5 @@
 import { aiConfigured, notConfigured, quotaError, streamCompletion } from "@/lib/ai";
+import { describeSearch } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase/server";
 import { getTool } from "@/lib/tools";
 
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, headline, background")
+    .select("full_name, headline, background, onboarding")
     .eq("id", user.id)
     .maybeSingle();
   const background = profile?.background?.trim() ?? "";
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     if (value) parts.push(`<${field.id}>\n${value}\n</${field.id}>`);
   }
   if (background && !tool.fields.some((f) => f.profileFallback)) {
-    parts.push(`<parcours_du_candidat>\nNom : ${profile?.full_name ?? ""}\nTitre : ${profile?.headline ?? ""}\n${background}\n</parcours_du_candidat>`);
+    parts.push(`<parcours_du_candidat>\nNom : ${profile?.full_name ?? ""}\nTitre : ${profile?.headline ?? ""}\n${describeSearch(profile?.onboarding)}\n${background}\n</parcours_du_candidat>`);
   }
 
   const limited = await quotaError(supabase, user);
