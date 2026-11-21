@@ -137,7 +137,7 @@ export default function Emplois() {
               </article>
             ))}
           </div>
-          {!jobs.length && <p className="mt-4 text-muted">Aucune offre trouvée. Essaie un intitulé plus court, en anglais, ou un autre pays.</p>}
+          {!jobs.length && <p className="mt-4 text-muted">Aucune offre trouvée pour cette recherche. Essaie un intitulé plus court ou en anglais, retire la ville, ou colle directement le lien d'une annonce dans « Postuler ».</p>}
         </>
       )}
     </div>

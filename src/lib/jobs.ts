@@ -174,7 +174,9 @@ export async function searchJobs(query: Query, remoteOnly: boolean) {
   if (remoteOnly) jobs = jobs.filter((j) => j.remote);
   // Les offres du pays demandé d'abord (les sources par pays), puis le télétravail.
   const local = jobs.filter((j) => j.source === "Jooble" || j.source === "Adzuna");
-  const rest = jobs.filter((j) => j.source !== "Jooble" && j.source !== "Adzuna");
+  // Avec un pays choisi, les sources générales ne gardent que le télétravail et les offres situées dans ce pays.
+  const inCountry = (j: Job) => !query.country || j.remote || (query.countryName !== "" && j.location.toLowerCase().includes(query.countryName.toLowerCase()));
+  const rest = jobs.filter((j) => j.source !== "Jooble" && j.source !== "Adzuna" && inCountry(j));
   const byTitle = (list: Job[]) => [...list.filter((j) => matches(j.title, query.q)), ...list.filter((j) => !matches(j.title, query.q))];
   return { jobs: [...byTitle(local), ...byTitle(rest)].slice(0, 60), failed };
 }
