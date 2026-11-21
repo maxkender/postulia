@@ -103,8 +103,8 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
       setError("L'enregistrement a échoué. Réessaie.");
       setBusy(false);
     } else {
-      router.replace("/app");
-      router.refresh();
+      // Rechargement complet : le tableau de bord gardé en mémoire redirigeait encore vers le questionnaire.
+      window.location.assign("/app");
     }
   }
   const next = () => (isLast && mode === "app" ? finishInApp() : setIndex((i) => Math.min(i + 1, steps.length - 1)));

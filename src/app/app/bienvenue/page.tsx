@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Onboarding } from "@/components/Onboarding";
 import { readPending, saveOnboarding } from "@/lib/onboarding";
@@ -8,7 +7,6 @@ import { createClient } from "@/lib/supabase/client";
 
 /** Après la création du compte : enregistre les réponses données avant l'inscription, ou pose les questions. */
 export default function Bienvenue() {
-  const router = useRouter();
   const [ask, setAsk] = useState(false);
 
   useEffect(() => {
@@ -21,12 +19,9 @@ export default function Bienvenue() {
     }
     saveOnboarding(createClient(), pending).then(({ error }) => {
       if (error) setAsk(true);
-      else {
-        router.replace("/app");
-        router.refresh();
-      }
+      else window.location.assign("/app");
     });
-  }, [router]);
+  }, []);
 
   if (!ask) return <p className="py-20 text-center text-sm font-semibold uppercase tracking-[0.12em] text-brand">Préparation de ton espace…</p>;
   return (
