@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GoogleButton } from "@/components/GoogleButton";
@@ -75,6 +76,7 @@ export function AuthForm() {
           {loading ? "Un instant…" : signup ? "Créer mon compte" : "Se connecter"}
         </button>
       </form>
+      {signup && <p className="mt-3 text-xs leading-relaxed text-muted">En créant un compte, tu acceptes les <Link href="/cgv" target="_blank" className="underline underline-offset-2">conditions générales</Link> et la <Link href="/confidentialite" target="_blank" className="underline underline-offset-2">politique de confidentialité</Link>.</p>}
       <p className="mt-5 text-center text-sm text-muted">
         {signup ? "Déjà un compte ?" : "Pas encore de compte ?"}{" "}
         <button type="button" className="font-medium text-brand underline-offset-4 hover:underline" onClick={() => setSignup(!signup)}>

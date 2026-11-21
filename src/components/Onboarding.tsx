@@ -329,6 +329,7 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
                 {notice && <p role="status" className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand-dark">{notice}</p>}
                 <button className="btn-blue w-full py-3.5" disabled={busy}>{busy ? "Un instant…" : "Créer mon compte gratuit"}</button>
               </form>
+              <p className="mt-3 text-xs leading-relaxed text-muted">En créant un compte, tu acceptes les <Link href="/cgv" target="_blank" className="underline underline-offset-2">conditions générales</Link> et la <Link href="/confidentialite" target="_blank" className="underline underline-offset-2">politique de confidentialité</Link>.</p>
             </div>
             <p className="mt-4 text-sm text-muted">Sans carte bancaire · 3 générations offertes par jour</p>
           </div>

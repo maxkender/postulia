@@ -67,7 +67,7 @@ async function Content({ searchParams }: { searchParams: Promise<{ paiement?: st
           </div>
         </div>
       </div>
-      <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Paiement sécurisé par Stripe</p>
+      <p className="mt-6 text-sm text-muted">Paiement sécurisé par Stripe. Abonnement mensuel renouvelé automatiquement, résiliable à tout moment, avec 14 jours pour changer d'avis. Voir les <a href="/cgv" target="_blank" className="font-semibold text-brand">conditions générales</a>.</p>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { createAdminClient } from "@/lib/supabase/admin";
+
 export type Job = {
   id: string;
   title: string;
@@ -45,9 +47,25 @@ const matches = (text: string, q: string) => {
 // Sources d'offres qui autorisent la réutilisation de leurs données via une API publique.
 // Jooble et Adzuna couvrent les postes sur site dans des dizaines de pays et demandent une clé gratuite.
 
-async function jooble({ q, country, countryName, where }: Query): Promise<Job[]> {
+const CACHE_HOURS = 12;
+
+/** Jooble limite le nombre d'appels par jour : une même recherche est gardée 12 heures. */
+async function jooble(query: Query): Promise<Job[]> {
+  if (!process.env.JOOBLE_API_KEY) return [];
+  const admin = createAdminClient();
+  const cacheKey = `jooble:${query.country}:${query.where.toLowerCase()}:${query.q.toLowerCase()}`.slice(0, 300);
+  if (admin) {
+    const since = new Date(Date.now() - CACHE_HOURS * 3600 * 1000).toISOString();
+    const { data } = await admin.from("job_cache").select("data").eq("key", cacheKey).gte("created_at", since).maybeSingle();
+    if (data?.data) return data.data as Job[];
+  }
+  const jobs = await joobleFetch(query);
+  if (admin) await admin.from("job_cache").upsert({ key: cacheKey, data: jobs, created_at: new Date().toISOString() });
+  return jobs;
+}
+
+async function joobleFetch({ q, country, countryName, where }: Query): Promise<Job[]> {
   const key = process.env.JOOBLE_API_KEY;
-  if (!key) return [];
   const host = country && country !== "US" ? `${country.toLowerCase()}.jooble.org` : "jooble.org";
   const data = await getJson(`https://${host}/api/${key}`, {
     method: "POST",

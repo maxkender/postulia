@@ -675,7 +675,16 @@ export default function Home() {
             <Link href="/commencer" className="block text-muted transition hover:text-ink">Créer un compte</Link>
           </nav>
         </div>
-        <p className="border-t border-line py-6 text-center text-sm text-muted">© 2026 Postulia</p>
+        <div className="border-t border-line">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-6 text-sm text-muted sm:px-8">
+            <p>© 2026 Postulia</p>
+            <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Informations légales">
+              <Link href="/mentions-legales" className="transition hover:text-ink">Mentions légales</Link>
+              <Link href="/cgv" className="transition hover:text-ink">Conditions générales</Link>
+              <Link href="/confidentialite" className="transition hover:text-ink">Confidentialité</Link>
+            </nav>
+          </div>
+        </div>
       </footer>
     </div>
   );
