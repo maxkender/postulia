@@ -90,8 +90,11 @@ async function adzuna({ q, country, where }: Query): Promise<Job[]> {
 }
 
 async function remotive({ q }: Query): Promise<Job[]> {
-  const data = await getJson(`https://remotive.com/api/remote-jobs?limit=25&search=${encodeURIComponent(q)}`);
-  return (data.jobs ?? []).slice(0, 25).map((j: Record<string, unknown>) => ({
+  const data = await getJson(`https://remotive.com/api/remote-jobs?limit=100&search=${encodeURIComponent(q)}`);
+  return (data.jobs ?? [])
+    .filter((j: Record<string, unknown>) => matches(`${j.title} ${(j.tags as string[] | undefined)?.join(" ") ?? ""} ${j.category ?? ""}`, q))
+    .slice(0, 25)
+    .map((j: Record<string, unknown>) => ({
     id: `remotive-${j.id}`,
     title: strip(j.title),
     company: strip(j.company_name),
@@ -149,5 +152,6 @@ export async function searchJobs(query: Query, remoteOnly: boolean) {
   // Les offres du pays demandé d'abord (les sources par pays), puis le télétravail.
   const local = jobs.filter((j) => j.source === "Jooble" || j.source === "Adzuna");
   const rest = jobs.filter((j) => j.source !== "Jooble" && j.source !== "Adzuna");
-  return { jobs: [...local, ...rest].slice(0, 60), failed };
+  const byTitle = (list: Job[]) => [...list.filter((j) => matches(j.title, query.q)), ...list.filter((j) => !matches(j.title, query.q))];
+  return { jobs: [...byTitle(local), ...byTitle(rest)].slice(0, 60), failed };
 }

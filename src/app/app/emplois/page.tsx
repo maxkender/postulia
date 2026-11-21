@@ -1,14 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { countries } from "@/lib/countries";
 import type { Job } from "@/lib/jobs";
 import { createClient } from "@/lib/supabase/client";
 
 export default function Emplois() {
   const router = useRouter();
-  const list = useMemo(() => countries(), []);
+  // Les noms de pays viennent du navigateur : on les charge après l'affichage pour éviter tout écart avec le serveur.
+  const [list, setList] = useState<{ code: string; name: string }[]>([]);
   const [q, setQ] = useState("");
   const [country, setCountry] = useState("");
   const [where, setWhere] = useState("");
@@ -22,6 +23,8 @@ export default function Emplois() {
 
   // Pré-remplit avec le poste visé donné à l'inscription.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- chargement unique au montage
+    setList(countries());
     createClient()
       .from("profiles")
       .select("headline")
