@@ -31,6 +31,7 @@ export function Markdown({ text }: { text: string }) {
     else if (line.startsWith("## ")) out.push(<h2 key={out.length} className="mt-5 border-b border-line pb-1 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-brand">{inline(line.slice(3))}</h2>);
     else if (line.startsWith("### ")) out.push(<h3 key={out.length} className="mt-3 font-semibold">{inline(line.slice(4))}</h3>);
     else if (/^-{3,}$/.test(line)) out.push(<hr key={out.length} className="my-3 border-line" />);
+    else if (/^\d+[.)]\s+/.test(line)) out.push(<p key={out.length} className="mt-3 font-semibold">{inline(line)}</p>);
     else if (line.trim() === "") out.push(<div key={out.length} className="h-2" />);
     else out.push(<p key={out.length}>{inline(line)}</p>);
   }

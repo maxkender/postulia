@@ -124,3 +124,13 @@ h1, h2, h3, .font-display { letter-spacing: -0.02em; }
   .no-print { display: none !important; }
   .print-area { border: 0 !important; box-shadow: none !important; padding: 0 !important; }
 }
+
+/* Démo animée du hero */
+@keyframes demo-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes demo-pop { from { opacity: 0; transform: translateY(8px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes demo-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes demo-ring { from { stroke-dashoffset: 163; } }
+.demo-line { transform-origin: left; animation: demo-grow 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.demo-pop { animation: demo-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.demo-type { animation: demo-type 0.9s steps(22) both; }
+.demo-ring { animation: demo-ring 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 1.6s both; }

@@ -30,9 +30,9 @@ export default async function Dashboard() {
     { label: `Générations restantes · ${pro ? "Pro" : "Gratuit"}`, value: `${left}/${limit}` },
   ];
   const actions = [
-    { href: "/app/cv", n: "01", title: "Générer un CV", text: "Adapté à une offre précise.", dot: "bg-brand" },
-    { href: "/app/lettre", n: "02", title: "Écrire une lettre", text: "Lettre de motivation sur mesure.", dot: "bg-violet" },
-    { href: "/app/candidatures", n: "03", title: "Suivre mes candidatures", text: "Ajoute une offre et son statut.", dot: "bg-sun" },
+    { href: "/app/postuler", n: "01", title: "Candidature express", text: "CV + lettre + suivi en un clic.", dot: "bg-brand" },
+    { href: "/app/entretien", n: "02", title: "Simuler un entretien", text: "Questions du poste et retours.", dot: "bg-violet" },
+    { href: "/app/outils", n: "03", title: "Boîte à outils", text: "Score ATS, relance, salaire…", dot: "bg-coral" },
   ];
 
   return (

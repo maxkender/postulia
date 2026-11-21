@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { HeroDemo } from "@/components/HeroDemo";
 import { Logo } from "@/components/Logo";
 import { Reveal } from "@/components/Reveal";
+import { ToolIcon } from "@/components/ToolIcon";
+import { TOOLS } from "@/lib/tools";
 
 const jobs = [
   "Cheffe de projet",
@@ -27,15 +30,31 @@ const examples = [
 const faq = [
   {
     q: "Qu'est-ce que Postulia et comment ça marche ?",
-    a: "Tu décris ton parcours une seule fois. Ensuite, pour chaque offre, tu colles l'annonce : Postulia rédige un CV et une lettre de motivation adaptés, que tu peux modifier, enregistrer et exporter en PDF.",
+    a: "Tu décris ton parcours une seule fois. Ensuite, pour chaque offre, tu colles l'annonce : Postulia rédige un CV et une lettre de motivation adaptés, les range dans tes documents et ajoute l'offre à ton suivi.",
   },
   {
     q: "Est-ce que l'IA invente des expériences ?",
-    a: "Non. Postulia travaille uniquement à partir du parcours que tu fournis. S'il manque une information, il laisse un repère entre crochets pour que tu la complètes.",
+    a: "Non. Postulia travaille uniquement à partir du parcours que tu fournis. S'il manque une information, il laisse un repère entre crochets pour que tu la complètes. Relis toujours tes documents avant de les envoyer.",
+  },
+  {
+    q: "Mon CV passera-t-il les logiciels de tri (ATS) ?",
+    a: "Les CV sont rédigés dans une structure simple que ces logiciels lisent bien, avec le vocabulaire de l'offre. Le vérificateur ATS te donne en plus un score et la liste des mots-clés manquants avant d'envoyer.",
+  },
+  {
+    q: "Postulia envoie-t-il les candidatures à ma place ?",
+    a: "Non. Postulia prépare le dossier complet en un clic, mais c'est toi qui l'envoies. Tu gardes la main sur ce qui part à ton nom, et tu évites les candidatures en masse que les recruteurs repèrent.",
+  },
+  {
+    q: "Comment fonctionne la simulation d'entretien ?",
+    a: "Un recruteur IA te pose les questions probables pour le poste, une par une. Après chaque réponse, il te dit ce qui est bien et ce qui manque. À la fin, tu reçois un bilan noté avec des conseils.",
+  },
+  {
+    q: "Qu'est-ce qu'une génération ?",
+    a: "Chaque document rédigé ou chaque analyse compte pour une génération : un CV, une lettre, un score ATS, un e-mail de relance. Une candidature express en utilise deux. Une simulation d'entretien complète n'en utilise qu'une.",
   },
   {
     q: "Quelle différence entre Gratuit et Pro ?",
-    a: "L'offre gratuite donne 3 générations par jour, avec le suivi des candidatures et l'export PDF. Pro monte à 50 générations par jour, pour postuler à grande échelle.",
+    a: "L'offre gratuite donne 3 générations par jour, avec tous les outils, le suivi des candidatures et l'export PDF. Pro monte à 50 générations par jour, pour postuler à grande échelle.",
   },
   {
     q: "Puis-je annuler mon abonnement ?",
@@ -43,8 +62,22 @@ const faq = [
   },
   {
     q: "Mes données sont-elles privées ?",
-    a: "Ton profil, tes documents et tes candidatures ne sont visibles que par toi, depuis ton compte.",
+    a: "Ton profil, tes documents et tes candidatures ne sont visibles que par toi, depuis ton compte. Le paiement est géré par Stripe : Postulia ne voit jamais ta carte.",
   },
+];
+
+const steps = [
+  { n: "1", title: "Décris ton parcours", text: "Une seule fois. Colle ton CV actuel ou le texte de ton profil LinkedIn." },
+  { n: "2", title: "Colle une offre", text: "Poste, entreprise et texte de l'annonce : Postulia repère ce que le recruteur attend." },
+  { n: "3", title: "Récupère ton dossier", text: "CV et lettre sur mesure, rangés et suivis. Tu relis, tu exportes en PDF, tu postules." },
+];
+
+const versus = [
+  { before: "Réécrire son CV à la main pour chaque annonce", after: "Un CV adapté en quelques minutes" },
+  { before: "Une lettre recopiée d'une candidature à l'autre", after: "Une lettre écrite pour l'offre, à partir de ton parcours" },
+  { before: "Aucune idée de ce que voit le logiciel de tri", after: "Un score ATS et les mots-clés manquants" },
+  { before: "Un tableur oublié au bout de dix candidatures", after: "Un suivi rempli automatiquement" },
+  { before: "Découvrir les questions le jour de l'entretien", after: "Une simulation avec retours avant le vrai rendez-vous" },
 ];
 
 function Arrow() {
@@ -99,53 +132,6 @@ function MiniCv({ name, role, chip = "bg-brand-soft text-brand-dark", className 
         {[26, 34, 22, 30].map((w, i) => (
           <span key={i} className={`h-3 rounded-full ${chip}`} style={{ width: w }} />
         ))}
-      </div>
-    </div>
-  );
-}
-
-function HeroMockup() {
-  return (
-    <div className="relative mx-auto mt-14 max-w-4xl" aria-hidden>
-      <div className="rounded-[28px] border border-white bg-white/70 p-2.5 shadow-[0_40px_80px_-40px_rgba(91,77,255,0.55)] backdrop-blur">
-        <div className="overflow-hidden rounded-[20px] bg-white">
-          <div className="flex items-center gap-1.5 border-b border-line px-4 py-3">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-            <span className="ml-3 hidden h-6 flex-1 rounded-full bg-cream sm:block" />
-          </div>
-          <div className="grid gap-5 p-5 text-left sm:grid-cols-[1fr_1.25fr] sm:p-7">
-            <div className="space-y-3.5">
-              {[
-                { l: "Poste visé", v: "Cheffe de projet digital" },
-                { l: "Entreprise", v: "Atelier Nord" },
-              ].map((f) => (
-                <div key={f.l}>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">{f.l}</p>
-                  <p className="mt-1.5 rounded-xl border border-line px-3 py-2 text-[13px] font-medium">{f.v}</p>
-                </div>
-              ))}
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">Texte de l'offre</p>
-                <div className="mt-1.5 rounded-xl border border-line p-3">
-                  <Lines widths={[100, 94, 98, 88, 60]} />
-                </div>
-              </div>
-              <div className="btn-blue w-full py-2.5 text-[13px]">Générer mon CV</div>
-            </div>
-            <div className="relative rounded-2xl bg-cream p-4 sm:p-6">
-              <MiniCv name="Camille Martin" role="Cheffe de projet digital" />
-              <div className="absolute -bottom-4 left-1/2 flex w-[92%] -translate-x-1/2 items-center gap-2 rounded-full bg-white p-[3px] shadow-[0_14px_30px_-12px_rgba(166,61,255,0.6)]">
-                <span className="tile-alt absolute inset-0 rounded-full" />
-                <span className="relative flex w-full items-center justify-between rounded-full bg-white px-4 py-2.5 text-[13px]">
-                  Mettre en avant la gestion de budget<span className="ml-0.5 inline-block h-4 w-px animate-pulse bg-ink" />
-                  <span className="text-gradient text-base">✦</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -285,25 +271,25 @@ export default function Home() {
     <div className="relative overflow-x-clip">
       <div className="aurora" />
 
-      <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-5 py-6 sm:px-8">
-        <div className="flex items-center gap-5">
+      <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
+        <div className="glass mx-auto flex max-w-6xl items-center justify-between rounded-full py-2 pl-5 pr-2">
           <Logo />
-          <span className="hidden h-6 w-px bg-ink/15 md:block" />
-          <span className="hidden items-center gap-2 text-sm text-muted md:flex">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
-            Gratuit pour commencer
-          </span>
+          <nav className="hidden items-center gap-1 text-[15px] font-medium md:flex">
+            <a href="#fonctionnalites" className="rounded-full px-3.5 py-2 transition hover:bg-ink/5">Fonctionnalités</a>
+            <a href="#outils" className="rounded-full px-3.5 py-2 transition hover:bg-ink/5">Outils</a>
+            <a href="#tarifs" className="rounded-full px-3.5 py-2 transition hover:bg-ink/5">Tarifs</a>
+            <a href="#faq" className="rounded-full px-3.5 py-2 transition hover:bg-ink/5">FAQ</a>
+          </nav>
+          <div className="flex items-center gap-1">
+            <Link href="/connexion" className="hidden rounded-full px-4 py-2 text-[15px] font-semibold sm:block">Se connecter</Link>
+            <Link href="/connexion?mode=inscription" className="btn-blue px-5 py-2.5 text-[15px]">S'inscrire</Link>
+          </div>
         </div>
-        <nav className="flex items-center gap-2">
-          <a href="#tarifs" className="hidden px-4 py-2 text-[15px] font-semibold sm:block">Tarifs</a>
-          <Link href="/connexion" className="hidden px-4 py-2 text-[15px] font-semibold sm:block">Se connecter</Link>
-          <Link href="/connexion?mode=inscription" className="btn-blue px-5 py-2.5 text-[15px]">S'inscrire</Link>
-        </nav>
       </header>
 
       <main className="relative">
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-5 pt-8 text-center sm:px-8 sm:pt-12">
+        <section className="mx-auto max-w-6xl px-5 pt-12 text-center sm:px-8 sm:pt-16">
           <p className="mx-auto inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-sm font-semibold shadow-[0_1px_2px_rgba(11,11,20,0.05)] backdrop-blur">
             <span className="text-gradient">✦</span> CV et lettre adaptés à chaque annonce
           </p>
@@ -320,13 +306,13 @@ export default function Home() {
           </Link>
           <p className="mt-4 text-sm text-muted">Sans carte bancaire · 3 générations offertes par jour</p>
 
-          <HeroMockup />
+          <HeroDemo />
         </section>
 
         <Ticker />
 
         {/* Bento */}
-        <section id="fonctionnalites" className="mx-auto max-w-6xl scroll-mt-10 px-5 pt-24 sm:px-8 sm:pt-32">
+        <section id="fonctionnalites" className="mx-auto max-w-6xl scroll-mt-24 px-5 pt-24 sm:px-8 sm:pt-32">
           <Reveal>
             <h2 className="mx-auto max-w-3xl text-balance text-center text-3xl font-bold leading-[1.1] sm:text-5xl">
               Une candidature complète pour chaque offre, en quelques minutes
@@ -373,6 +359,37 @@ export default function Home() {
                 </div>
               </article>
             </Reveal>
+            <Reveal>
+              <article className="relative h-full overflow-hidden rounded-[28px] bg-ink p-6 text-white sm:p-8">
+                <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-brand/70 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-24 left-0 h-56 w-56 rounded-full bg-coral/40 blur-3xl" />
+                <div className="relative">
+                  <p className="eyebrow !text-white/60">Accélère</p>
+                  <h3 className="mt-3 text-2xl font-semibold">Candidature express</h3>
+                  <p className="mt-2 max-w-sm text-lg leading-snug text-white/70">Une annonce collée, un clic : le CV, la lettre et la ligne de suivi sont prêts.</p>
+                  <ol className="mt-7 space-y-2.5" aria-hidden>
+                    {["CV adapté", "Lettre de motivation", "Ajout au suivi"].map((t) => (
+                      <li key={t} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium backdrop-blur">
+                        <span className="grid h-6 w-6 place-items-center rounded-full bg-[#22c55e] text-[11px] font-bold">✓</span>
+                        {t}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </article>
+            </Reveal>
+            <Reveal delay={80}>
+              <article className="card relative h-full overflow-hidden sm:p-8">
+                <p className="eyebrow">Entraîne-toi</p>
+                <h3 className="mt-3 text-2xl font-semibold">Simulation d'entretien</h3>
+                <p className="mt-2 max-w-sm text-lg leading-snug text-muted">Un recruteur IA te pose les questions du poste et commente chacune de tes réponses.</p>
+                <div className="mt-7 space-y-2.5 text-sm" aria-hidden>
+                  <p className="w-[88%] rounded-[20px] rounded-bl-md bg-cream px-4 py-3">Parlez-moi d'un projet où vous avez dû arbitrer entre délai et qualité.</p>
+                  <p className="ml-auto w-[80%] rounded-[20px] rounded-br-md bg-brand px-4 py-3 text-white">Sur la refonte du site, j'ai proposé de livrer en deux lots…</p>
+                  <p className="w-[88%] rounded-[20px] rounded-bl-md bg-brand-soft px-4 py-3 text-brand-dark"><b>Retour :</b> bon exemple, ajoute le résultat chiffré.</p>
+                </div>
+              </article>
+            </Reveal>
             <Reveal className="md:col-span-2">
               <article className="grid overflow-hidden rounded-[28px] bg-white shadow-[0_1px_2px_rgba(11,11,20,0.04),0_20px_40px_-28px_rgba(11,11,20,0.18)] md:grid-cols-[2fr_3fr]">
                 <div className="p-6 sm:p-8">
@@ -412,6 +429,24 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Étapes */}
+        <section className="mx-auto max-w-6xl px-5 pt-28 sm:px-8 sm:pt-40">
+          <Reveal>
+            <h2 className="text-center text-3xl font-bold leading-[1.1] sm:text-5xl">Trois étapes, pas une de plus</h2>
+          </Reveal>
+          <ol className="mt-12 grid gap-4 md:grid-cols-3">
+            {steps.map((st, n) => (
+              <Reveal key={st.n} delay={n * 80}>
+                <li className="card h-full list-none sm:p-8">
+                  <span className="tile grid h-12 w-12 place-items-center rounded-2xl text-xl font-bold text-white">{st.n}</span>
+                  <h3 className="mt-6 text-2xl font-semibold">{st.title}</h3>
+                  <p className="mt-2 text-lg leading-snug text-muted">{st.text}</p>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+        </section>
+
         {/* Grille d'outils */}
         <section className="mx-auto max-w-6xl px-5 pt-28 sm:px-8 sm:pt-40">
           <Reveal>
@@ -425,6 +460,52 @@ export default function Home() {
                 <h3 className="text-xl font-semibold">{t.title}</h3>
                 <p className="mt-3 min-h-[4.5rem] text-[15px] leading-relaxed text-ink/80">{t.text}</p>
                 <Tile alt={i % 2 === 1}>{t.visual}</Tile>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* Avant / après */}
+        <section className="mx-auto max-w-5xl px-5 pt-28 sm:px-8 sm:pt-40">
+          <Reveal>
+            <h2 className="mx-auto max-w-3xl text-balance text-center text-3xl font-bold leading-[1.1] sm:text-5xl">Chercher un emploi, avant et après Postulia</h2>
+          </Reveal>
+          <Reveal>
+            <div className="mt-12 overflow-hidden rounded-[28px] bg-white shadow-[0_1px_2px_rgba(11,11,20,0.04),0_20px_40px_-28px_rgba(11,11,20,0.18)]">
+              <div className="grid grid-cols-2 text-sm font-semibold uppercase tracking-[0.1em]">
+                <p className="px-5 py-4 text-muted sm:px-8">À la main</p>
+                <p className="tile px-5 py-4 text-white sm:px-8">Avec Postulia</p>
+              </div>
+              {versus.map((v) => (
+                <div key={v.before} className="grid grid-cols-2 border-t border-line">
+                  <p className="flex gap-3 px-5 py-5 text-muted sm:px-8"><span className="text-coral">✕</span>{v.before}</p>
+                  <p className="flex gap-3 bg-brand-soft/50 px-5 py-5 font-medium sm:px-8"><span className="text-[#16a34a]">✓</span>{v.after}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </section>
+
+        {/* Boîte à outils */}
+        <section id="outils" className="mx-auto max-w-6xl scroll-mt-24 px-5 pt-28 sm:px-8 sm:pt-40">
+          <Reveal>
+            <p className="mx-auto w-max rounded-full bg-white px-4 py-1.5 text-sm font-semibold shadow-[0_1px_2px_rgba(11,11,20,0.05)]">
+              <span className="text-brand">★</span> Inclus dans l'offre gratuite
+            </p>
+            <h2 className="mt-5 text-center text-3xl font-bold leading-[1.1] sm:text-5xl">Une boîte à outils pour chaque étape</h2>
+            <p className="mx-auto mt-4 max-w-xl text-center text-lg text-muted">Vérifie ton CV, rédige une relance, prépare l'entretien, négocie ton salaire.</p>
+          </Reveal>
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {TOOLS.map((t, n) => (
+              <Reveal key={t.id} delay={(n % 4) * 60}>
+                <Link href="/connexion?mode=inscription" className="card group flex h-full flex-col transition duration-300 hover:-translate-y-1">
+                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-soft text-brand transition group-hover:bg-brand group-hover:text-white">
+                    <ToolIcon name={t.icon} />
+                  </span>
+                  <h3 className="mt-5 text-lg font-semibold">{t.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{t.short}</p>
+                  <span className="mt-5 inline-flex w-max items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1.5 text-[13px] font-semibold text-brand-dark">Voir l'outil <Arrow /></span>
+                </Link>
               </Reveal>
             ))}
           </div>
@@ -472,7 +553,7 @@ export default function Home() {
         </section>
 
         {/* Tarifs */}
-        <section id="tarifs" className="mx-auto max-w-5xl scroll-mt-10 px-5 pt-28 sm:px-8 sm:pt-40">
+        <section id="tarifs" className="mx-auto max-w-5xl scroll-mt-24 px-5 pt-28 sm:px-8 sm:pt-40">
           <Reveal>
             <p className="mx-auto w-max rounded-full bg-white px-4 py-1.5 text-sm font-semibold shadow-[0_1px_2px_rgba(11,11,20,0.05)]">
               <span className="text-brand">★</span> Sans engagement
@@ -487,7 +568,7 @@ export default function Home() {
                 <p className="mt-4 text-6xl font-bold tracking-[-0.03em]">0 €</p>
                 <p className="mt-2 text-muted">Pour tester et postuler à quelques offres.</p>
                 <ul className="mt-7 space-y-3">
-                  {["3 générations par jour", "CV et lettres de motivation", "Suivi des candidatures illimité", "Export PDF"].map((f) => (
+                  {["3 générations par jour", "CV, lettres et candidature express", "Simulation d'entretien et 8 outils", "Suivi des candidatures et export PDF"].map((f) => (
                     <li key={f} className="flex gap-3 text-brand">
                       <Check />
                       <span className="text-ink">{f}</span>
@@ -530,7 +611,7 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section className="mx-auto max-w-4xl px-5 pt-28 sm:px-8 sm:pt-40">
+        <section id="faq" className="mx-auto max-w-4xl scroll-mt-24 px-5 pt-28 sm:px-8 sm:pt-40">
           <Reveal>
             <h2 className="text-center text-3xl font-bold sm:text-5xl">Questions fréquentes</h2>
           </Reveal>
@@ -576,7 +657,9 @@ export default function Home() {
           <nav className="space-y-3">
             <p className="text-xs font-bold uppercase tracking-[0.12em]">Produit</p>
             <a href="#fonctionnalites" className="block text-muted transition hover:text-ink">Fonctionnalités</a>
+            <a href="#outils" className="block text-muted transition hover:text-ink">Outils</a>
             <a href="#tarifs" className="block text-muted transition hover:text-ink">Tarifs</a>
+            <a href="#faq" className="block text-muted transition hover:text-ink">FAQ</a>
           </nav>
           <nav className="space-y-3">
             <p className="text-xs font-bold uppercase tracking-[0.12em]">Compte</p>
