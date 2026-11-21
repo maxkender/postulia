@@ -7,9 +7,8 @@ import { Logo } from "./Logo";
 
 const links = [
   { href: "/app", label: "Accueil" },
+  { href: "/app/emplois", label: "Emplois" },
   { href: "/app/postuler", label: "Postuler" },
-  { href: "/app/cv", label: "CV" },
-  { href: "/app/lettre", label: "Lettre" },
   { href: "/app/entretien", label: "Entretien" },
   { href: "/app/outils", label: "Outils" },
   { href: "/app/candidatures", label: "Suivi" },

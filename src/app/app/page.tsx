@@ -36,7 +36,7 @@ export default async function Dashboard() {
   ];
   const actions = [
     { href: "/app/postuler", n: "01", title: "Nouvelle offre", text: "Un parcours guidé pour chaque annonce.", dot: "bg-brand" },
-    { href: "/app/entretien", n: "02", title: "Simuler un entretien", text: "Questions du poste et retours.", dot: "bg-violet" },
+    { href: "/app/emplois", n: "02", title: "Chercher des offres", text: "Dans tous les pays et en télétravail.", dot: "bg-violet" },
     { href: "/app/outils", n: "03", title: "Boîte à outils", text: "Score ATS, relance, salaire…", dot: "bg-coral" },
   ];
 

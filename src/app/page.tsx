@@ -45,6 +45,10 @@ const faq = [
     a: "Non. Postulia prépare le dossier complet en un clic, mais c'est toi qui l'envoies. Tu gardes la main sur ce qui part à ton nom, et tu évites les candidatures en masse que les recruteurs repèrent.",
   },
   {
+    q: "Postulia fonctionne-t-il hors de France ?",
+    a: "Oui. Tu choisis tes pays à l'inscription, la recherche d'offres couvre le monde entier, et tes CV et lettres sont rédigés dans la langue de l'annonce, selon les usages du pays visé.",
+  },
+  {
     q: "Puis-je importer une offre depuis son lien ?",
     a: "Oui. Colle l'adresse de l'annonce : Postulia remplit le poste, l'entreprise et le texte. Certains sites bloquent la lecture automatique ; dans ce cas, il suffit de coller le texte de l'offre.",
   },
