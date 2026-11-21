@@ -17,7 +17,8 @@ export async function GET(request: Request) {
   if (country && !/^[A-Z]{2}$/.test(country)) return Response.json({ error: "Pays invalide." }, { status: 400 });
 
   const { jobs, failed } = await searchJobs(
-    { q, country, countryName: (params.get("countryName") ?? "").trim().slice(0, 60), where: (params.get("where") ?? "").trim().slice(0, 80) },
+    { q, country, // Nom anglais du pays : c'est celui que les moteurs d'offres reconnaissent le mieux.
+      countryName: country ? (new Intl.DisplayNames(["en"], { type: "region" }).of(country) ?? "") : "", where: (params.get("where") ?? "").trim().slice(0, 80) },
     params.get("remote") === "1",
   );
   return Response.json({ jobs, failed, sources: jobSources() });

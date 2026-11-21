@@ -66,12 +66,17 @@ async function jooble(query: Query): Promise<Job[]> {
 
 async function joobleFetch({ q, country, countryName, where }: Query): Promise<Job[]> {
   const key = process.env.JOOBLE_API_KEY;
-  const host = country && country !== "US" ? `${country.toLowerCase()}.jooble.org` : "jooble.org";
-  const data = await getJson(`https://${host}/api/${key}`, {
+  // La clé est rattachée au site principal de Jooble : le pays et la ville passent par le champ « location ».
+  const location = [where, countryName].filter(Boolean).join(", ");
+  const data = await getJson(`https://jooble.org/api/${key}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ keywords: q, location: where || countryName || "", page: 1 }),
+    body: JSON.stringify({ keywords: q, location, page: 1 }),
+  }).catch((error: Error) => {
+    // Ne jamais laisser l'adresse (qui contient la clé) remonter dans un message d'erreur.
+    throw new Error(error.message.replace(String(key), "***"));
   });
+  void country;
   return (data.jobs ?? []).slice(0, 25).map((j: Record<string, unknown>) => ({
     id: `jooble-${j.id}`,
     title: strip(j.title),
@@ -155,7 +160,7 @@ export async function searchJobs(query: Query, remoteOnly: boolean) {
   settled.forEach((r, i) => {
     if (r.status === "fulfilled") jobs = jobs.concat(r.value);
     else {
-      failed.push(providers[i].name);
+      failed.push(`${["jooble", "adzuna", "remotive", "arbeitnow"][i]}: ${String((r.reason as Error)?.message ?? r.reason).slice(0, 80)}`);
       console.error(`jobs:${providers[i].name}`, r.reason);
     }
   });
