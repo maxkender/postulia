@@ -8,6 +8,8 @@ export type ChatMessage = { role: "system" | "user" | "assistant"; content: stri
 
 export const HONESTY = `Appuie-toi uniquement sur les informations fournies par la personne. N'invente jamais de diplôme, d'employeur, de date, de chiffre, de compétence ni de détail (taille ou composition d'équipe, outils, résultats) qui n'y figure pas. S'il manque une information utile, laisse un repère entre crochets, par exemple [date] ou [résultat chiffré].`;
 
+export const INTERNATIONAL = `Adapte-toi au pays et à la langue de l'offre : tout document destiné au recruteur (CV, lettre, e-mail, message) est rédigé dans la langue de l'annonce et suit les usages de ce pays (par exemple pas de photo, d'âge ni de situation familiale sur un CV anglo-saxon ; « Lebenslauf » daté en Allemagne). Si aucune offre n'est fournie, utilise la langue et le pays que la personne vise. Tes analyses, conseils et explications restent en français.`;
+
 export function aiConfigured() {
   return Boolean(process.env.FAL_API_KEY ?? process.env.FAL_KEY);
 }

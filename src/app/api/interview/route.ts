@@ -11,6 +11,7 @@ Déroulé :
 - Ensuite, à chaque réponse du candidat : donne d'abord un retour bref sous le titre « **Retour** » (ce qui est bien, ce qui manque, une piste concrète en 2 ou 3 phrases), puis pose la question suivante sous « **Question suivante** ».
 - Une seule question à la fois. Varie : motivation, expérience, mise en situation, question difficile. Appuie-toi sur l'offre et sur le parcours du candidat.
 - Si le candidat écrit « BILAN », arrête les questions et donne un bilan structuré : « ## Points forts », « ## Axes de progrès », « ## Trois conseils pour le vrai entretien », puis une note sur 10.
+Si l'offre est rédigée dans une autre langue que le français, mène l'entretien dans cette langue (c'est celle du vrai entretien) et donne tes retours en français.
 Reste concis.`;
 
 type Body = { jobTitle?: string; company?: string; jobDescription?: string; messages?: { role?: string; content?: string }[] };

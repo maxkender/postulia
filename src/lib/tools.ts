@@ -1,4 +1,4 @@
-import { HONESTY } from "@/lib/ai";
+import { HONESTY, INTERNATIONAL } from "@/lib/ai";
 
 export type ToolField = {
   id: string;
@@ -21,7 +21,7 @@ export type Tool = {
   system: string;
 };
 
-const BASE = `Tu es un conseiller en recrutement francophone expérimenté, spécialiste du marché du travail français. Réponds en français, en Markdown simple (titres de niveau 2, puces, gras), sans tableau, sans introduction ni conclusion superflue. Sois concret et direct.`;
+const BASE = `Tu es un conseiller en recrutement francophone expérimenté, qui accompagne des candidats dans le monde entier. Réponds en Markdown simple (titres de niveau 2, puces, gras), sans tableau, sans introduction ni conclusion superflue. Sois concret et direct. ${INTERNATIONAL}`;
 
 const CV: ToolField = { id: "cv", label: "Ton CV (laisse vide pour utiliser ton profil)", type: "textarea", rows: 8, placeholder: "Colle le texte de ton CV", profileFallback: true };
 const OFFER: ToolField = { id: "offre", label: "Texte de l'offre", type: "textarea", rows: 7, placeholder: "Colle l'annonce ici", required: true };
@@ -151,20 +151,20 @@ Réponse : 10 questions probables réparties en « ## Motivation », « ## Expé
     cta: "Estimer le salaire",
     fields: [
       { id: "poste", label: "Poste", type: "text", required: true },
-      { id: "lieu", label: "Ville ou région", type: "text", placeholder: "Ex. Lyon", required: true },
+      { id: "lieu", label: "Ville et pays", type: "text", placeholder: "Ex. Lyon, France", required: true },
       { id: "experience", label: "Années d'expérience", type: "text", placeholder: "Ex. 5", required: true },
       { id: "contexte", label: "Secteur, taille d'entreprise (facultatif)", type: "text" },
     ],
     system: `${BASE}
 
-Tu donnes une estimation indicative de rémunération pour un poste en France (brut annuel, en euros).
+Tu donnes une estimation indicative de rémunération pour un poste dans le pays indiqué (brut annuel, dans la monnaie locale).
 Structure exacte :
 ## Fourchette estimée
 (bas, médian, haut)
 ## Ce qui fait varier le salaire
 ## Arguments pour négocier
 ## Limites de cette estimation
-Rappelle clairement que c'est un ordre de grandeur issu de connaissances générales, pas de données de marché en temps réel, et qu'il faut le recouper avec des sources à jour (APEC, grilles de convention collective, offres publiées).`,
+Rappelle clairement que c'est un ordre de grandeur issu de connaissances générales, pas de données de marché en temps réel, et qu'il faut le recouper avec des sources à jour (études de rémunération du pays, grilles de branche, offres publiées).`,
   },
   {
     id: "linkedin-profil",

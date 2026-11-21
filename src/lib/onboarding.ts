@@ -14,6 +14,8 @@ export type Answers = {
   poste?: string;
   contrats?: string[];
   salaire?: number | null;
+  devise?: string;
+  pays?: string[];
   modes?: string[];
   lieux?: string[];
   lieu?: string;
@@ -28,7 +30,6 @@ export const OPTIONS = {
   ia: ["Oui", "Pas sûr·e", "Non"],
   contrats: ["Temps plein (CDI)", "Temps partiel", "CDD ou mission", "Alternance", "Stage"],
   modes: ["Télétravail complet", "Hybride", "Sur site"],
-  lieux: ["Île-de-France", "Lyon", "Marseille", "Toulouse", "Bordeaux", "Lille", "Nantes", "France entière", "Europe"],
 } as const;
 
 export function readPending(): Answers | null {
@@ -79,7 +80,7 @@ export async function saveOnboarding(supabase: SupabaseClient, answers: Answers)
 export function describeSearch(o: unknown): string {
   if (!o || typeof o !== "object") return "";
   const a = o as Answers & { experience?: string; mode?: string };
-  const places = [...(a.lieux ?? []), a.lieu].filter(Boolean).join(", ");
+  const places = [a.lieu, ...(a.pays ?? []), ...(a.lieux ?? [])].filter(Boolean).join(", ");
   const modes = a.modes?.length ? a.modes.join(", ") : a.mode;
   const lines = [
     a.situation && `Situation : ${a.situation}`,
@@ -87,7 +88,7 @@ export function describeSearch(o: unknown): string {
     a.experience && `Expérience : ${a.experience}`,
     a.objectifs?.length && `Objectifs : ${a.objectifs.join(", ")}`,
     a.contrats?.length && `Contrats visés : ${a.contrats.join(", ")}`,
-    typeof a.salaire === "number" && a.salaire > 0 && `Salaire minimum souhaité : ${a.salaire} € brut par an`,
+    typeof a.salaire === "number" && a.salaire > 0 && `Salaire minimum souhaité : ${a.salaire} ${a.devise ?? "EUR"} brut par an`,
     (places || modes) && `Lieu : ${[places, modes].filter(Boolean).join(" · ")}`,
   ].filter(Boolean);
   return lines.length ? `Recherche d'emploi :\n${lines.join("\n")}`.slice(0, 1500) : "";

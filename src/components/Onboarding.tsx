@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { CURRENCIES, REGIONS, countries } from "@/lib/countries";
 import { OPTIONS, readPending, saveOnboarding, writePending, type Answers } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase/client";
 import { GoogleButton } from "./GoogleButton";
@@ -64,6 +65,7 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [countryQuery, setCountryQuery] = useState("");
 
   const sections = SECTIONS.filter((s) => mode === "public" || s.label !== "Ton compte");
   const steps = sections.flatMap((s) => s.steps);
@@ -88,7 +90,7 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
     writePending(next);
     if (advance) setTimeout(() => setIndex((i) => Math.min(i + 1, steps.length - 1)), 200);
   }
-  function toggle(key: "objectifs" | "contrats" | "modes" | "lieux", value: string) {
+  function toggle(key: "objectifs" | "contrats" | "modes" | "lieux" | "pays", value: string) {
     const list = answers[key] ?? [];
     set({ [key]: list.includes(value) ? list.filter((v) => v !== value) : [...list, value] });
   }
@@ -147,6 +149,10 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
     </div>
   );
   const salary = answers.salaire ?? 35000;
+  const currency = answers.devise ?? "EUR";
+  const money = (n: number) => new Intl.NumberFormat("fr-FR", { style: "currency", currency, maximumFractionDigits: 0 }).format(n);
+  const query = countryQuery.trim().toLowerCase();
+  const matches = query ? countries().filter((c) => c.name.toLowerCase().includes(query) && !answers.pays?.includes(c.name)).slice(0, 8) : [];
   const noCv = answers.aCv === OPTIONS.aCv[1];
 
   return (
@@ -257,9 +263,14 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
         {step === "salaire" && (
           <>
             <Title sub="Brut par an. Cela reste entre toi et Postulia.">Quel salaire minimum vises-tu ?</Title>
-            <p className="mt-9 text-5xl font-semibold tracking-[-0.03em] sm:text-6xl">{salary >= 150000 ? "150 000 € et plus" : `${salary.toLocaleString("fr-FR")} €`}</p>
-            <input type="range" min={0} max={150000} step={1000} value={salary} aria-label="Salaire minimum souhaité, en euros brut par an" onChange={(e) => set({ salaire: Number(e.target.value) })} className="mt-8 w-full accent-[#5b4dff]" />
-            <div className="mt-1 flex justify-between text-sm text-muted"><span>0 €</span><span>150 000 € et plus</span></div>
+            <div className="mt-8 flex justify-center">
+              <select aria-label="Devise" value={currency} onChange={(e) => set({ devise: e.target.value })} className="input w-auto rounded-full py-2 pr-9 text-sm font-semibold">
+                {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <p className="mt-5 text-5xl font-semibold tracking-[-0.03em] sm:text-6xl">{money(salary)}{salary >= 150000 ? " et plus" : ""}</p>
+            <input type="range" min={0} max={150000} step={1000} value={salary} aria-label="Salaire minimum souhaité, brut par an" onChange={(e) => set({ salaire: Number(e.target.value) })} className="mt-8 w-full accent-[#5b4dff]" />
+            <div className="mt-1 flex justify-between text-sm text-muted"><span>{money(0)}</span><span>{money(150000)} et plus</span></div>
             {cont()}
             <button type="button" onClick={() => { set({ salaire: null }); next(); }} className="mx-auto mt-3 block text-sm font-semibold text-muted underline-offset-4 hover:underline">Je préfère ne pas répondre</button>
           </>
@@ -267,15 +278,35 @@ export function Onboarding({ mode }: { mode: "public" | "app" }) {
         {step === "modes" && (<><Title sub="Plusieurs réponses possibles.">Quel mode de travail préfères-tu ?</Title>{multi("modes")}{cont(!answers.modes?.length)}</>)}
         {step === "lieux" && (
           <>
-            <Title sub="Choisis une ou plusieurs zones, ou écris la tienne.">Où aimerais-tu travailler ?</Title>
-            <div className="mt-8 flex flex-wrap justify-center gap-2">
-              {OPTIONS.lieux.map((o) => (
+            <Title sub="Ajoute un ou plusieurs pays, ou toute une région du monde.">Où aimerais-tu travailler ?</Title>
+            <div className="relative mt-8">
+              <input aria-label="Rechercher un pays" autoComplete="off" className="input py-3.5 text-center text-lg" placeholder="Tape pour chercher un pays…" value={countryQuery} onChange={(e) => setCountryQuery(e.target.value)} />
+              {matches.length > 0 && (
+                <ul className="absolute inset-x-0 top-full z-10 mt-2 overflow-hidden rounded-2xl bg-white text-left shadow-[0_20px_40px_-18px_rgba(11,11,20,0.35)]">
+                  {matches.map((c) => (
+                    <li key={c.code}>
+                      <button type="button" className="block w-full px-5 py-3 text-left text-base hover:bg-brand-soft" onClick={() => { toggle("pays", c.name); setCountryQuery(""); }}>{c.name}</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {Boolean(answers.pays?.length) && (
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {answers.pays!.map((c) => (
+                  <button key={c} type="button" onClick={() => toggle("pays", c)} aria-label={`Retirer ${c}`} className="rounded-full border-2 border-brand bg-brand-soft px-4 py-2 text-base font-medium text-brand-dark">{c} <span aria-hidden>✕</span></button>
+                ))}
+              </div>
+            )}
+            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.1em] text-muted">Ou ajoute une région entière</p>
+            <div className="mt-3 flex flex-wrap justify-center gap-2">
+              {REGIONS.map((o) => (
                 <button key={o} type="button" aria-pressed={answers.lieux?.includes(o)} onClick={() => toggle("lieux", o)} className={`rounded-full border-2 px-4 py-2.5 text-base font-medium transition ${answers.lieux?.includes(o) ? "border-brand bg-brand-soft text-brand-dark" : "border-transparent bg-white shadow-[0_1px_2px_rgba(11,11,20,0.05)]"}`}>{o}</button>
               ))}
             </div>
-            <input maxLength={120} aria-label="Autre ville ou région" className="input mt-4 py-3.5 text-center" placeholder="Autre ville ou région" value={answers.lieu ?? ""} onChange={(e) => set({ lieu: e.target.value })} />
+            <input maxLength={120} aria-label="Ville (facultatif)" className="input mt-4 py-3.5 text-center" placeholder="Ville (facultatif)" value={answers.lieu ?? ""} onChange={(e) => set({ lieu: e.target.value })} />
             {error && <p role="alert" className="mt-3 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-            {cont(!answers.lieux?.length && !answers.lieu?.trim())}
+            {cont(!answers.lieux?.length && !answers.pays?.length && !answers.lieu?.trim())}
           </>
         )}
 

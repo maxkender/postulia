@@ -1,19 +1,20 @@
-import { HONESTY, aiConfigured, notConfigured, quotaError, streamCompletion } from "@/lib/ai";
+import { HONESTY, INTERNATIONAL, aiConfigured, notConfigured, quotaError, streamCompletion } from "@/lib/ai";
 import { describeSearch } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 300;
 
-const SYSTEM = `Tu es un conseiller en recrutement francophone expérimenté. Tu rédiges des CV et des lettres de motivation pour le marché du travail français.
+const SYSTEM = `Tu es un conseiller en recrutement francophone expérimenté. Tu rédiges des CV et des lettres de motivation pour des candidatures dans le monde entier.
 
 Règles :
 - ${HONESTY}
 - Adapte le contenu à l'offre visée : reprends son vocabulaire et mets en avant les expériences les plus pertinentes, afin que le document passe aussi bien auprès d'un logiciel de tri que d'un recruteur.
-- Écris dans un français naturel et direct, sans formules creuses.
+- ${INTERNATIONAL}
+- Écris dans une langue naturelle et directe, sans formules creuses.
 - Réponds uniquement avec le document, sans introduction ni commentaire.
 
 Format :
-- CV : Markdown. Le nom en titre de niveau 1, une ligne d'accroche, puis des sections de niveau 2 (Profil, Expériences, Formation, Compétences, et Langues ou Centres d'intérêt si le parcours en donne). Les expériences en ordre antichronologique, avec des puces qui commencent par un verbe d'action. Une page.
+- CV : Markdown. Le nom en titre de niveau 1, une ligne d'accroche, puis des sections de niveau 2 (Profil, Expériences, Formation, Compétences, et Langues ou Centres d'intérêt si le parcours en donne), avec des titres de section dans la langue du document. Les expériences en ordre antichronologique, avec des puces qui commencent par un verbe d'action. Une page.
 - Lettre de motivation : texte simple sans Markdown, avec en-tête, objet, formule d'appel, trois ou quatre paragraphes et formule de politesse. Moins de 350 mots.`;
 
 type Body = { applicationId?: string; kind?: string; jobTitle?: string; company?: string; jobDescription?: string; instructions?: string };
