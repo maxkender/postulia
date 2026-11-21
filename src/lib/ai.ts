@@ -20,7 +20,7 @@ export function notConfigured() {
 export async function quotaError(supabase: SupabaseClient, user: User) {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const [{ count }, { data: sub }] = await Promise.all([
-    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since).neq("kind", "import"),
+    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since).not("kind", "in", "(import,questions)"),
     supabase.from("subscriptions").select("status").eq("user_id", user.id).maybeSingle(),
   ]);
   const pro = isActive(sub?.status);

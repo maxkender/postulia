@@ -121,7 +121,10 @@ export default function Candidatures() {
           <p className="eyebrow">Suivi</p>
           <h1 className="mt-3 text-4xl font-semibold sm:text-5xl">Mes candidatures</h1>
         </div>
-        <button className="btn-blue" onClick={() => setAdding(!adding)}>{adding ? "Fermer" : "+ Ajouter une offre"}</button>
+        <div className="flex flex-wrap gap-2">
+          <button className="btn-ghost" onClick={() => setAdding(!adding)}>{adding ? "Fermer" : "Ajout rapide"}</button>
+          <Link href="/app/postuler" className="btn-blue">+ Nouvelle offre</Link>
+        </div>
       </div>
 
       <dl className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -180,7 +183,8 @@ export default function Candidatures() {
                         {docs.some((d) => d.application_id === a.id) && <span className="rounded-full bg-cream px-2 py-0.5 text-muted">Documents</span>}
                       </span>
                     </button>
-                    <select aria-label="Statut" className="input mt-2.5 rounded-xl px-2 py-1.5 text-xs" value={a.status} onChange={(e) => setStatus(a, e.target.value)}>
+                    <Link href={`/app/offres/${a.id}`} className="mt-2.5 inline-block text-[13px] font-semibold text-brand">Ouvrir le parcours →</Link>
+                    <select aria-label="Statut" className="input mt-2 rounded-xl px-2 py-1.5 text-xs" value={a.status} onChange={(e) => setStatus(a, e.target.value)}>
                       {STATUSES.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
                     </select>
                   </article>
@@ -247,12 +251,12 @@ export default function Candidatures() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted">Aucun document. Utilise <Link href="/app/postuler" className="font-semibold text-brand">Postuler</Link> pour créer le CV et la lettre de cette offre.</p>
+                <p className="text-sm text-muted">Aucun document. Ouvre le parcours de cette offre pour rédiger le CV et la lettre.</p>
               )}
             </div>
 
             <div className="mt-8 flex flex-wrap gap-2">
-              <Link href="/app/entretien" className="btn-ghost px-4 py-2.5">Préparer l'entretien</Link>
+              <Link href={`/app/offres/${open.id}`} className="btn-blue px-4 py-2.5">Ouvrir le parcours</Link>
               <button className="btn-ghost px-4 py-2.5 hover:border-red-700 hover:text-red-700" onClick={() => remove(open.id)}>Supprimer</button>
             </div>
           </aside>

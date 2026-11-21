@@ -56,7 +56,7 @@ export function HeroDemo() {
             <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-            <span className="ml-3 hidden h-6 flex-1 items-center rounded-full bg-cream px-3 text-[11px] text-muted sm:flex">postulia · candidature express</span>
+            <span className="ml-3 hidden h-6 flex-1 items-center rounded-full bg-cream px-3 text-[11px] text-muted sm:flex">postulia · nouvelle offre</span>
           </div>
           <div key={i} className="grid gap-5 p-5 text-left sm:grid-cols-[1fr_1.25fr] sm:p-7">
             <div className="space-y-3.5">
@@ -76,7 +76,7 @@ export function HeroDemo() {
                   ))}
                 </div>
               </div>
-              <div className="btn-blue w-full py-2.5 text-[13px]">Préparer ma candidature</div>
+              <div className="btn-blue w-full py-2.5 text-[13px]">Créer mon parcours</div>
             </div>
             <div className="relative rounded-2xl bg-cream p-4 sm:p-6">
               <div className="rounded-xl bg-white p-4 shadow-[0_12px_30px_-14px_rgba(11,11,20,0.35)]">

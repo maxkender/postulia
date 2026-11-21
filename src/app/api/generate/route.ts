@@ -16,7 +16,7 @@ Format :
 - CV : Markdown. Le nom en titre de niveau 1, une ligne d'accroche, puis des sections de niveau 2 (Profil, Expériences, Formation, Compétences, et Langues ou Centres d'intérêt si le parcours en donne). Les expériences en ordre antichronologique, avec des puces qui commencent par un verbe d'action. Une page.
 - Lettre de motivation : texte simple sans Markdown, avec en-tête, objet, formule d'appel, trois ou quatre paragraphes et formule de politesse. Moins de 350 mots.`;
 
-type Body = { kind?: string; jobTitle?: string; company?: string; jobDescription?: string; instructions?: string };
+type Body = { applicationId?: string; kind?: string; jobTitle?: string; company?: string; jobDescription?: string; instructions?: string };
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -28,9 +28,24 @@ export async function POST(request: Request) {
 
   const body = (await request.json().catch(() => ({}))) as Body;
   const kind = body.kind === "letter" ? "letter" : "cv";
-  const jobTitle = (body.jobTitle ?? "").trim().slice(0, 200);
-  const company = (body.company ?? "").trim().slice(0, 200);
-  const jobDescription = (body.jobDescription ?? "").trim();
+  let jobTitle = (body.jobTitle ?? "").trim().slice(0, 200);
+  let company = (body.company ?? "").trim().slice(0, 200);
+  let jobDescription = (body.jobDescription ?? "").trim();
+  let precisions = "";
+  if (body.applicationId) {
+    // Parcours d'une offre : on repart de la fiche enregistrée et des réponses aux questions ciblées.
+    const { data: app } = await supabase
+      .from("applications")
+      .select("job_title, company, description, questions")
+      .eq("id", String(body.applicationId))
+      .maybeSingle();
+    if (!app) return Response.json({ error: "Offre introuvable." }, { status: 404 });
+    jobTitle = app.job_title;
+    company = app.company;
+    jobDescription = app.description ?? "";
+    const answered = (Array.isArray(app.questions) ? app.questions : []).filter((x: { a?: string }) => x?.a?.trim());
+    precisions = answered.map((x: { q: string; a: string }) => `Question : ${x.q}\nRéponse du candidat : ${x.a}`).join("\n\n").slice(0, 8000);
+  }
   const instructions = (body.instructions ?? "").trim().slice(0, 1000);
   if (!jobTitle) return Response.json({ error: "Indique le poste visé." }, { status: 400 });
   if (jobDescription.length > 20000) {
@@ -53,6 +68,7 @@ export async function POST(request: Request) {
     kind === "cv" ? "Rédige un CV adapté à l'offre ci-dessous." : "Rédige une lettre de motivation pour l'offre ci-dessous.",
     `<candidat>\nNom : ${profile.full_name ?? ""}\nTitre : ${profile.headline ?? ""}\nE-mail : ${user.email ?? ""}\n${describeSearch(profile.onboarding)}\n\nParcours :\n${profile.background}\n</candidat>`,
     `<offre>\nPoste : ${jobTitle}\nEntreprise : ${company || "non précisée"}\n\n${jobDescription || "(Pas de description fournie.)"}\n</offre>`,
+    precisions ? `<precisions_du_candidat>\nCes réponses viennent du candidat et font partie de son parcours : utilise-les.\n${precisions}\n</precisions_du_candidat>` : "",
     instructions ? `<consignes>\n${instructions}\n</consignes>` : "",
   ]
     .filter(Boolean)

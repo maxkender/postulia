@@ -54,7 +54,7 @@ const faq = [
   },
   {
     q: "Qu'est-ce qu'une génération ?",
-    a: "Chaque document rédigé ou chaque analyse compte pour une génération : un CV, une lettre, un score ATS, un e-mail de relance. Une candidature express en utilise deux. Une simulation d'entretien complète n'en utilise qu'une.",
+    a: "Chaque document rédigé ou chaque analyse compte pour une génération : un CV, une lettre, un score ATS, un e-mail de relance. Un parcours complet (analyse, CV, lettre) en utilise trois : une candidature complète par jour avec l'offre gratuite. Une simulation d'entretien complète n'en utilise qu'une.",
   },
   {
     q: "Quelle différence entre Gratuit et Pro ?",
@@ -369,10 +369,10 @@ export default function Home() {
                 <div className="pointer-events-none absolute -bottom-24 left-0 h-56 w-56 rounded-full bg-coral/40 blur-3xl" />
                 <div className="relative">
                   <p className="eyebrow !text-white/60">Accélère</p>
-                  <h3 className="mt-3 text-2xl font-semibold">Candidature express</h3>
-                  <p className="mt-2 max-w-sm text-lg leading-snug text-white/70">Une annonce collée, un clic : le CV, la lettre et la ligne de suivi sont prêts.</p>
+                  <h3 className="mt-3 text-2xl font-semibold">Un parcours par offre</h3>
+                  <p className="mt-2 max-w-sm text-lg leading-snug text-white/70">Colle une annonce : Postulia l'analyse, te pose les bonnes questions et te guide jusqu'à l'entretien.</p>
                   <ol className="mt-7 space-y-2.5" aria-hidden>
-                    {["CV adapté", "Lettre de motivation", "Ajout au suivi"].map((t) => (
+                    {["Analyse de l'offre et score de compatibilité", "Questions ciblées sur ce poste", "CV et lettre sur mesure", "Relance et préparation d'entretien"].map((t) => (
                       <li key={t} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium backdrop-blur">
                         <span className="grid h-6 w-6 place-items-center rounded-full bg-[#22c55e] text-[11px] font-bold">✓</span>
                         {t}
@@ -572,7 +572,7 @@ export default function Home() {
                 <p className="mt-4 text-6xl font-bold tracking-[-0.03em]">0 €</p>
                 <p className="mt-2 text-muted">Pour tester et postuler à quelques offres.</p>
                 <ul className="mt-7 space-y-3">
-                  {["3 générations par jour", "CV, lettres et candidature express", `Simulation d'entretien et ${TOOLS.length} outils`, "Suivi des candidatures et export PDF"].map((f) => (
+                  {["3 générations par jour", "Un parcours complet par offre", `Simulation d'entretien et ${TOOLS.length} outils`, "Suivi des candidatures et export PDF"].map((f) => (
                     <li key={f} className="flex gap-3 text-brand">
                       <Check />
                       <span className="text-ink">{f}</span>

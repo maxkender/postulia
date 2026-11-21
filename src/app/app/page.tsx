@@ -15,7 +15,7 @@ export default async function Dashboard() {
     supabase.from("documents").select("id", { count: "exact", head: true }),
     supabase.from("applications").select("status"),
     supabase.from("subscriptions").select("status").maybeSingle(),
-    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since).neq("kind", "import"),
+    supabase.from("generations").select("id", { count: "exact", head: true }).gte("created_at", since).not("kind", "in", "(import,questions)"),
     supabase.from("applications").select("id, job_title, company").lte("follow_up_at", day).limit(5),
     supabase.from("contacts").select("id, name, company").lte("follow_up_at", day).limit(5),
   ]);
@@ -35,7 +35,7 @@ export default async function Dashboard() {
     { label: `Générations restantes · ${pro ? "Pro" : "Gratuit"}`, value: `${left}/${limit}` },
   ];
   const actions = [
-    { href: "/app/postuler", n: "01", title: "Candidature express", text: "CV + lettre + suivi en un clic.", dot: "bg-brand" },
+    { href: "/app/postuler", n: "01", title: "Nouvelle offre", text: "Un parcours guidé pour chaque annonce.", dot: "bg-brand" },
     { href: "/app/entretien", n: "02", title: "Simuler un entretien", text: "Questions du poste et retours.", dot: "bg-violet" },
     { href: "/app/outils", n: "03", title: "Boîte à outils", text: "Score ATS, relance, salaire…", dot: "bg-coral" },
   ];

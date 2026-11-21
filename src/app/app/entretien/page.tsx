@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ErrorNote } from "@/components/ErrorNote";
 import { Markdown } from "@/components/Markdown";
+import { createClient } from "@/lib/supabase/client";
 import { useStream } from "@/lib/useStream";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -15,6 +16,20 @@ export default function Entretien() {
   const [answer, setAnswer] = useState("");
   const { output, busy, error, upgrade, run } = useStream();
   const bottom = useRef<HTMLDivElement>(null);
+
+  // Arrivée depuis le parcours d'une offre : on reprend son poste, son entreprise et son texte.
+  useEffect(() => {
+    const offre = new URLSearchParams(window.location.search).get("offre");
+    if (!offre) return;
+    createClient()
+      .from("applications")
+      .select("job_title, company, description")
+      .eq("id", offre)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setJob({ jobTitle: data.job_title, company: data.company, jobDescription: data.description ?? "" });
+      });
+  }, []);
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
